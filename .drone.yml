@@ -5,11 +5,13 @@ type: docker
 steps:
 
   - name: Check Commit Message
-    image: alpine
-    environment:
-      COMMIT_MESSAGE: ${DRONE_COMMIT_MESSAGE}
+    image: alpine/git
     commands:
-      - echo "$COMMIT_MESSAGE" | grep -q "\[maven-release-plugin\]" && echo "skip" > skip_build || echo "run" > skip_build
+      - |
+        if git log -1 --pretty=%B | grep -q '[maven-release-plugin]'; then
+          echo "Коммит содержит '[maven-release-plugin]', пропуск выполнения."
+          exit 0
+        fi
 
 
   - name: Set up Java
@@ -17,6 +19,7 @@ steps:
     environment:
       MAVEN_HOME: /usr/share/maven
       JAVA_HOME: /usr/lib/jvm/java-11-openjdk
+      DRONE_DEBUG: true
       GIT_USERNAME:
         from_secret: git_username
       GIT_EMAIL:
