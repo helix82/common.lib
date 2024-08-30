@@ -47,10 +47,7 @@ steps:
       NEXUS_PASSWORD:
         from_secret: nexus_password
     commands:
-      - |
-        if ! git log -1 --pretty=%B | grep -q '[maven-release-plugin]'; then
-
-          
+      - |          
           cat > settings.xml <<EOL
           <settings>
             <servers>
@@ -66,9 +63,7 @@ steps:
           mvn release:prepare --batch-mode -Dgit.token=${PAT_TOKEN} -Dgit.username=${GIT_USERNAME}
         
           mvn release:perform -s settings.xml
-        else
-          echo "Коммит содержит '[maven-release-plugin]', пропуск выполнения."
-        fi
+
     when:
       status:
         - success
