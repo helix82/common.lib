@@ -1,5 +1,6 @@
 kind: pipeline
 name: Maven Build
+type: docker
 
 steps:
   - name: Checkout code
