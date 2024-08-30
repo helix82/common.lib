@@ -3,8 +3,6 @@ name: Maven Build
 type: docker
 
 steps:
-  - name: Checkout code
-    image: alpine/git
 
   - name: Check Commit Message
     image: alpine
@@ -25,7 +23,7 @@ steps:
         from_secret: git_email
     commands:
       - apt-get update
-      - apt-get install -y maven
+      - apt-get install -y maven git
       - git config --global user.email "$GIT_EMAIL"
       - git config --global user.name "$GIT_USERNAME"
     when:
