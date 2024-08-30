@@ -24,7 +24,8 @@ steps:
       GIT_EMAIL:
         from_secret: git_email
     commands:
-      - apk add --no-cache maven
+      - apt-get update
+      - apt-get install -y maven
       - git config --global user.email "$GIT_EMAIL"
       - git config --global user.name "$GIT_USERNAME"
     when:
