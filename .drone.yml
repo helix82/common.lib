@@ -114,7 +114,7 @@ steps:
       - apt-get update && apt-get install -y git
       - git config --global user.email "androkc1999@example.com"
       - git config --global user.name "androkc1999"
-      - mvn release:prepare --batch-mode -Dgit.token=${PAT_TOKEN} -Dgit.username=${GIT_USERNAME}
+      - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME
       - mvn release:perform -s ${DRONE_WORKSPACE}/settings.xml
 
 
