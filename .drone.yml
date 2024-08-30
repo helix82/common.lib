@@ -27,8 +27,10 @@ steps:
       - git config --global user.name "$GIT_USERNAME"
       - |
         export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+                
+        mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
         
-        cat > settings.xml <<EOL
+       cat > settings.xml <<EOL
         <settings>
           <servers>
             <server>
@@ -39,9 +41,6 @@ steps:
           </servers>
         </settings>
         EOL
-        
-        
-        mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
         
         mvn release:perform -s settings.xml
 
