@@ -3,18 +3,7 @@ name: Maven Build
 type: docker
 
 steps:
-
-  - name: Check Commit Message
-    image: alpine/git
-    commands:
-      - |
-        if git log -1 --pretty=%B | grep -q '[maven-release-plugin]'; then
-          echo "Коммит содержит '[maven-release-plugin]', пропуск выполнения."
-          exit 0
-        fi
-
-
-  - name: Set up Java
+  - name: Release
     image: eclipse-temurin:11
     environment:
       MAVEN_HOME: /usr/share/maven
@@ -110,4 +99,7 @@ trigger:
       - tag
       - pull_request
       - rollback
+    commit:
+      exclude:
+        - '*[maven-release-plugin]*'
 
