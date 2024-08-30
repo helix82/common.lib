@@ -40,14 +40,15 @@ steps:
           <servers>
             <server>
               <id>nexus</id>
-              <username>${NEXUS_USERNAME}</username>
-              <password>${NEXUS_PASSWORD}</password>
+              <username>$NEXUS_USERNAME</username>
+              <password>$NEXUS_PASSWORD</password>
             </server>
           </servers>
         </settings>
         EOL
         
-        mvn release:prepare --batch-mode -Dgit.token=${PAT_TOKEN} -Dgit.username=${GIT_USERNAME}
+        
+        mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME
         
         mvn release:perform -s settings.xml
 
