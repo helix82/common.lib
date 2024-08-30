@@ -113,3 +113,17 @@ steps:
     when:
       status: [ success, failure, changed ]
 
+image_pull_secrets:
+  - dockerconfig
+
+node:
+  node: 188.120.226.58
+
+trigger:
+  event:
+    include:
+      - push
+      - tag
+      - pull_request
+      - rollback
+
