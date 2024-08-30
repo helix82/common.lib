@@ -21,48 +21,33 @@ steps:
         from_secret: git_username
       GIT_EMAIL:
         from_secret: git_email
-    commands:
-      - apt-get update
-      - apt-get install -y maven git
-      - git config --global user.email "$GIT_EMAIL"
-      - git config --global user.name "$GIT_USERNAME"
-    when:
-      status:
-        - success
-      condition:
-        contains:
-          - skip_build: run
-      branch:
-        - master
-
-  - name: Prepare Maven Release
-    image: ubuntu:latest
-    environment:
       PAT_TOKEN:
         from_secret: pat_token
-      GIT_USERNAME:
-        from_secret: git_username
       NEXUS_USERNAME:
         from_secret: nexus_username
       NEXUS_PASSWORD:
         from_secret: nexus_password
     commands:
-      - |          
-          cat > settings.xml <<EOL
-          <settings>
-            <servers>
-              <server>
-                <id>nexus</id>
-                <username>${NEXUS_USERNAME}</username>
-                <password>${NEXUS_PASSWORD}</password>
-              </server>
-            </servers>
-          </settings>
-          EOL
-
-          mvn release:prepare --batch-mode -Dgit.token=${PAT_TOKEN} -Dgit.username=${GIT_USERNAME}
+      - apt-get update
+      - apt-get install -y maven git
+      - git config --global user.email "$GIT_EMAIL"
+      - git config --global user.name "$GIT_USERNAME"
+      - |
+        cat > settings.xml <<EOL
+        <settings>
+          <servers>
+            <server>
+              <id>nexus</id>
+              <username>${NEXUS_USERNAME}</username>
+              <password>${NEXUS_PASSWORD}</password>
+            </server>
+          </servers>
+        </settings>
+        EOL
         
-          mvn release:perform -s settings.xml
+        mvn release:prepare --batch-mode -Dgit.token=${PAT_TOKEN} -Dgit.username=${GIT_USERNAME}
+        
+        mvn release:perform -s settings.xml
 
     when:
       status:
