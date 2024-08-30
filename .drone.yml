@@ -36,7 +36,7 @@ steps:
         - master
 
   - name: Prepare Maven Release
-    image: eclipse-temurin:11
+    image: ubuntu:latest
     environment:
       PAT_TOKEN:
         from_secret: pat_token
@@ -69,7 +69,6 @@ steps:
         else
           echo "Коммит содержит '[maven-release-plugin]', пропуск выполнения."
         fi
-
     when:
       status:
         - success
