@@ -98,8 +98,8 @@ steps:
           <servers>
             <server>
               <id>nexus</id>
-              <username>${NEXUS_USERNAME}</username>
-              <password>${NEXUS_PASSWORD}</password>
+              <username>$NEXUS_USERNAME</username>
+              <password>$NEXUS_PASSWORD</password>
             </server>
           </servers>
         </settings>
@@ -112,7 +112,7 @@ steps:
       GIT_USERNAME: ${GIT_USERNAME}
     commands:
       - git config --global user.email "androkc1999@example.com"
-      - git config --global user.name "androkc"
+      - git config --global user.name "androkc1999"
       - mvn release:prepare --batch-mode -Dgit.token=${PAT_TOKEN} -Dgit.username=${GIT_USERNAME}
       - mvn release:perform -s ${DRONE_WORKSPACE}/settings.xml
 
