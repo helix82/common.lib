@@ -41,7 +41,7 @@ steps:
         EOL
         
         
-        mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME
+        mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
         
         mvn release:perform -s settings.xml
 
