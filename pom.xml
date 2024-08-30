@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>su.opencode.digsigcik</groupId>
+    <artifactId>dtos</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.lombok>1.18.18</version.lombok>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${version.lombok}</version>
+            <optional>true</optional>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+    <scm>
+        <url>https://git.essocode.ru/o-code/dtos-events.git</url>
+        <connection>scm:git:https://git.essocode.ru/o-code/dtos-events.git</connection>
+        <developerConnection>scm:git:https://git.essocode.ru/o-code/dtos-events.git</developerConnection>
+    </scm>
+
+
+    <distributionManagement>
+        <repository>
+            <id>nexus</id>
+            <name>Release repository</name>
+            <url>https://nexus.essocode.ru/repository/mvn-ocode/</url>
+        </repository>
+    </distributionManagement>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <username>${git.username}</username>
+                    <password>${git.token}</password>
+                    <preparationGoals>clean install</preparationGoals>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

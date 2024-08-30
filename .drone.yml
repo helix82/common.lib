@@ -1,0 +1,94 @@
+kind: pipeline
+name: Maven Build
+
+steps:
+  - name: Checkout code
+    image: alpine/git
+
+  - name: Check Commit Message
+    image: alpine
+    environment:
+      COMMIT_MESSAGE: ${DRONE_COMMIT_MESSAGE}
+    commands:
+      - echo "$COMMIT_MESSAGE" | grep -q "\[maven-release-plugin\]" && echo "skip" > skip_build || echo "run" > skip_build
+
+
+  - name: Set up Java
+    image: eclipse-temurin:11
+    environment:
+      MAVEN_HOME: /usr/share/maven
+      JAVA_HOME: /usr/lib/jvm/java-11-openjdk
+      GIT_USERNAME:
+        from_secret: git_username
+      GIT_EMAIL:
+        from_secret: git_email
+    commands:
+      - apk add --no-cache maven
+      - git config --global user.email "$GIT_EMAIL"
+      - git config --global user.name "$GIT_USERNAME"
+    when:
+      status:
+        - success
+      condition:
+        contains:
+          - skip_build: run
+      branch:
+        - master
+
+  - name: Prepare Maven Release
+    image: eclipse-temurin:11
+    environment:
+      PAT_TOKEN:
+        from_secret: pat_token
+      GIT_USERNAME:
+        from_secret: git_username
+      NEXUS_USERNAME:
+        from_secret: nexus_username
+      NEXUS_PASSWORD:
+        from_secret: nexus_password
+    commands:
+      - |
+        if ! git log -1 --pretty=%B | grep -q '[maven-release-plugin]'; then
+
+          
+          cat > settings.xml <<EOL
+          <settings>
+            <servers>
+              <server>
+                <id>nexus</id>
+                <username>${NEXUS_USERNAME}</username>
+                <password>${NEXUS_PASSWORD}</password>
+              </server>
+            </servers>
+          </settings>
+          EOL
+
+          mvn release:prepare --batch-mode -Dgit.token=${PAT_TOKEN} -Dgit.username=${GIT_USERNAME}
+        
+          mvn release:perform -s settings.xml
+        else
+          echo "Коммит содержит '[maven-release-plugin]', пропуск выполнения."
+        fi
+
+    when:
+      status:
+        - success
+      condition:
+        contains:
+          - skip_build: run
+      branch:
+        - master
+
+  - name: Clean up
+    image: alpine
+    commands:
+      - rm -f settings.xml
+    when:
+      status:
+        - success
+      condition:
+        contains:
+          - skip_build: run
+      branch:
+        - master
+
