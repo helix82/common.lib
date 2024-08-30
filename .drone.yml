@@ -3,69 +3,69 @@ name: Maven Build
 type: docker
 
 steps:
-  - name: Release
-    image: eclipse-temurin:11
-    environment:
-      MAVEN_HOME: /usr/share/maven
-      JAVA_HOME: /usr/lib/jvm/java-11-openjdk
-      DRONE_DEBUG: true
-      GIT_USERNAME:
-        from_secret: git_username
-      GIT_EMAIL:
-        from_secret: git_email
-      PAT_TOKEN:
-        from_secret: pat_token
-      NEXUS_USERNAME:
-        from_secret: nexus_username
-      NEXUS_PASSWORD:
-        from_secret: nexus_password
-    commands:
-      - set -x
-      - apt-get update
-      - apt-get install -y maven git
-      - git config --global user.email "$GIT_EMAIL"
-      - git config --global user.name "$GIT_USERNAME"
-      - |
-        export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
-      
-        
-        
-        mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
-        
-        cat > settings.xml <<EOL
-        <settings>
-          <servers>
-            <server>
-              <id>nexus</id>
-              <username>$NEXUS_USERNAME</username>
-              <password>$NEXUS_PASSWORD</password>
-            </server>
-          </servers>
-        </settings>
-        EOL        
-        mvn release:perform -s settings.xml
-
-    when:
-      status:
-        - success
-      condition:
-        contains:
-          - skip_build: run
-      branch:
-        - master
-
-  - name: Clean up
-    image: alpine
-    commands:
-      - rm -f settings.xml
-    when:
-      status:
-        - success
-      condition:
-        contains:
-          - skip_build: run
-      branch:
-        - master
+#  - name: Release
+#    image: eclipse-temurin:11
+#    environment:
+#      MAVEN_HOME: /usr/share/maven
+#      JAVA_HOME: /usr/lib/jvm/java-11-openjdk
+#      DRONE_DEBUG: true
+#      GIT_USERNAME:
+#        from_secret: git_username
+#      GIT_EMAIL:
+#        from_secret: git_email
+#      PAT_TOKEN:
+#        from_secret: pat_token
+#      NEXUS_USERNAME:
+#        from_secret: nexus_username
+#      NEXUS_PASSWORD:
+#        from_secret: nexus_password
+#    commands:
+#      - set -x
+#      - apt-get update
+#      - apt-get install -y maven git
+#      - git config --global user.email "$GIT_EMAIL"
+#      - git config --global user.name "$GIT_USERNAME"
+#      - |
+#        export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+#
+#
+#
+#        mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
+#
+#        cat > settings.xml <<EOL
+#        <settings>
+#          <servers>
+#            <server>
+#              <id>nexus</id>
+#              <username>$NEXUS_USERNAME</username>
+#              <password>$NEXUS_PASSWORD</password>
+#            </server>
+#          </servers>
+#        </settings>
+#        EOL
+#        mvn release:perform -s settings.xml
+#
+#    when:
+#      status:
+#        - success
+#      condition:
+#        contains:
+#          - skip_build: run
+#      branch:
+#        - master
+#
+#  - name: Clean up
+#    image: alpine
+#    commands:
+#      - rm -f settings.xml
+#    when:
+#      status:
+#        - success
+#      condition:
+#        contains:
+#          - skip_build: run
+#      branch:
+#        - master
 
 #  - name: notify
 #    image: appleboy/drone-discord
@@ -87,6 +87,36 @@ steps:
 #    when:
 #      status: [ success, failure, changed ]
 
+  - name: set-up-java
+    image: maven:3.8.4-openjdk-11-slim
+    environment:
+      MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
+    commands:
+      - |
+        cat > ${DRONE_WORKSPACE}/settings.xml <<EOL
+        <settings>
+          <servers>
+            <server>
+              <id>nexus</id>
+              <username>${NEXUS_USERNAME}</username>
+              <password>${NEXUS_PASSWORD}</password>
+            </server>
+          </servers>
+        </settings>
+        EOL
+
+  - name: build
+    image: maven:3.8.4-openjdk-11-slim
+    environment:
+      PAT_TOKEN: ${PAT_TOKEN}
+      GIT_USERNAME: ${GIT_USERNAME}
+    commands:
+      - git config --global user.email "androkc1999@example.com"
+      - git config --global user.name "androkc"
+      - mvn release:prepare --batch-mode -Dgit.token=${PAT_TOKEN} -Dgit.username=${GIT_USERNAME}
+      - mvn release:perform -s ${DRONE_WORKSPACE}/settings.xml
+
+
 image_pull_secrets:
   - dockerconfig
 
@@ -103,3 +133,6 @@ trigger:
       exclude:
         - '*[maven-release-plugin]*'
 
+volumes:
+  - name: cache
+    temp: {}
