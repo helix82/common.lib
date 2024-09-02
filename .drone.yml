@@ -28,7 +28,7 @@ steps:
       - git config --global user.name "$GIT_USERNAME"
       - git fetch
       - git tag
-      - mvn release:prepare -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
+      - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
 
 
       - if [ $? -eq 0 ]; then echo "Maven build was successful!"; exit 0; else echo "Maven build failed! Please check the logs for more details."; exit 1; fi
