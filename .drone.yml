@@ -21,8 +21,6 @@ steps:
       - git config --global user.name "$GIT_USERNAME"
       - git fetch
       - git tag
-      - echo "Using GIT_USERNAME: $GIT_USERNAME"
-      - echo "Using GIT_EMAIL: $GIT_EMAIL"
       - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
       - mvn release:perform -s ${DRONE_WORKSPACE}/build/settings.xml
     when:
