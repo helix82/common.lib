@@ -3,7 +3,7 @@ name: Maven Build
 type: docker
 
 steps:
-  - name: release-plugin
+  - name: release-plugin-prepare
     image: maven:3.8.4-openjdk-11-slim
     environment:
       MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
@@ -30,6 +30,36 @@ steps:
       ref:
         - refs/heads/master
         - refs/tags/*
+
+  - name: release-plugin-perform
+    image: maven:3.8.4-openjdk-11-slim
+    environment:
+      MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
+      DRONE_DEBUG: true
+      NEXUS_USERNAME:
+        from_secret: nexus_username
+      NEXUS_PASSWORD:
+        from_secret: nexus_password
+      GIT_EMAIL:
+        from_secret: git_email
+    commands:
+      - |
+        cat > $GITHUB_WORKSPACE/settings.xml <<EOL
+        <settings>
+        <servers>
+        <server>
+        <id>nexus</id>
+        <username>${{ secrets.NEXUS_USERNAME }}</username>
+        <password>${{ secrets.NEXUS_PASSWORD }}</password>
+        </server>
+        </servers>
+        </settings>
+        EOL
+        
+        mvn release:perform -s $GITHUB_WORKSPACE/settings.xml
+    when:
+      branch:
+        - master
 
 
 image_pull_secrets:
