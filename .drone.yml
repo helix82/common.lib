@@ -22,6 +22,14 @@ steps:
       - git fetch
       - git tag
       - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
+
+
+      - if [ $? -eq 0 ]; then
+        echo "Maven build was successful!";
+        else
+        echo "Maven build failed!";
+        exit 1;
+        fi
     when:
       branch:
         - master
