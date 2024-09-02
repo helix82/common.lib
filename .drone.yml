@@ -49,8 +49,8 @@ steps:
         <servers>
         <server>
         <id>nexus</id>
-        <username>${{ secrets.NEXUS_USERNAME }}</username>
-        <password>${{ secrets.NEXUS_PASSWORD }}</password>
+        <username>$NEXUS_USERNAME</username>
+        <password>$NEXUS_PASSWORD</password>
         </server>
         </servers>
         </settings>
