@@ -44,13 +44,14 @@ steps:
       - git --version
       - git config --global user.email "$GIT_EMAIL"
       - git config --global user.name "$GIT_USERNAME"
-      - git fetch  
+      - git fetch
       - git tag
       - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
       - mvn release:perform -s ${DRONE_WORKSPACE}/settings.xml
     when:
       branch:
         - master
+
 
 
 image_pull_secrets:
