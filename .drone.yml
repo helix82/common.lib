@@ -41,6 +41,7 @@ trigger:
       - push
       - pull_request
       - rollback
+      - tag
     commit:
       exclude:
         - '*[maven-release-plugin]*'
