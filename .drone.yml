@@ -35,8 +35,6 @@ steps:
     when:
       branch:
         - master
-      event:
-        - push
       ref:
         - refs/heads/master
         - refs/tags/*
