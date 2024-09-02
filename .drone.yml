@@ -26,7 +26,11 @@ steps:
     when:
       branch:
         - master
-
+      event:
+        - push
+      ref:
+        - refs/heads/master
+        - refs/tags/*
 
 
 image_pull_secrets:
