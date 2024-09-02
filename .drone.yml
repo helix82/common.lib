@@ -12,7 +12,9 @@ steps:
 
   - name: release-plugin-prepare
     image: maven:3.8.4-openjdk-11-slim
+    failure: ignore
     environment:
+      MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
       DRONE_DEBUG: true
       GIT_USERNAME:
         from_secret: git_username
@@ -34,6 +36,9 @@ steps:
     when:
       branch:
         - master
+      ref:
+        - refs/heads/master
+        - refs/tags/*
 
   - name: release-plugin-perform
     image: maven:3.8.4-openjdk-11-slim
