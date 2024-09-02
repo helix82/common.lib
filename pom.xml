@@ -4,7 +4,7 @@
 
     <groupId>su.opencode.digsigcik</groupId>
     <artifactId>dtos</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
