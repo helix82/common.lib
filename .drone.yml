@@ -22,7 +22,6 @@ steps:
       - git fetch
       - git tag
       - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
-#      - mvn release:perform -s ${DRONE_WORKSPACE}/settings.xml
     when:
       branch:
         - master
