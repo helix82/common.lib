@@ -14,10 +14,6 @@ steps:
         from_secret: pat_token
       GIT_EMAIL:
           from_secret: git_email
-      NEXUS_USERNAME:
-        from_secret: nexus_username
-      NEXUS_PASSWORD:
-        from_secret: nexus_password
     commands:
       - apt-get update && apt-get install -y git
       - git --version
@@ -26,18 +22,7 @@ steps:
       - git fetch
       - git tag
       - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
-      - cat > ${DRONE_WORKSPACE}/settings.xml <<EOL
-        <settings>
-        <servers>
-        <server>
-        <id>nexus</id>
-        <username>$NEXUS_USERNAME</username>
-        <password>$NEXUS_PASSWORD</password>
-        </server>
-        </servers>
-        </settings>
-        EOL
-      - mvn release:perform -s ${DRONE_WORKSPACE}/settings.xml
+#      - mvn release:perform -s ${DRONE_WORKSPACE}/settings.xml
     when:
       branch:
         - master
