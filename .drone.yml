@@ -20,7 +20,7 @@ steps:
       PAT_TOKEN:
         from_secret: pat_token
       GIT_EMAIL:
-          from_secret: git_email
+        from_secret: git_email
     commands:
       - apt-get update && apt-get install -y git
       - git --version
@@ -35,6 +35,8 @@ steps:
     when:
       branch:
         - master
+      event:
+        - push
       ref:
         - refs/heads/master
         - refs/tags/*
