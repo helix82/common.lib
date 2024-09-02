@@ -46,9 +46,6 @@ trigger:
       - pull_request
       - rollback
       - tag
-    commit:
-      exclude:
-        - '*[maven-release-plugin]*'
 
 volumes:
   - name: cache
