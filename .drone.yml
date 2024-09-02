@@ -91,6 +91,11 @@ steps:
     image: maven:3.8.4-openjdk-11-slim
     environment:
       MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
+      DRONE_DEBUG: true
+      NEXUS_USERNAME:
+          from_secret: nexus_username
+      NEXUS_PASSWORD:
+          from_secret: nexus_password
     commands:
       - |
         cat > ${DRONE_WORKSPACE}/settings.xml <<EOL
@@ -108,13 +113,18 @@ steps:
   - name: build
     image: maven:3.8.4-openjdk-11-slim
     environment:
-      PAT_TOKEN: ${PAT_TOKEN}
-      GIT_USERNAME: ${GIT_USERNAME}
+      DRONE_DEBUG: true
+      GIT_USERNAME:
+        from_secret: git_username
+      PAT_TOKEN:
+        from_secret: pat_token
+      GIT_EMAIL:
+          from_secret: git_email
     commands:
       - apt-get update && apt-get install -y git
-      - git config --global user.email "androkc1999@example.com"
-      - git config --global user.name "androkc1999"
-      - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME
+      - git config --global user.email "$GIT_EMAIL"
+      - git config --global user.name "$GIT_USERNAME"
+      - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
       - mvn release:perform -s ${DRONE_WORKSPACE}/settings.xml
 
 
