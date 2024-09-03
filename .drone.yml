@@ -50,7 +50,7 @@ steps:
           </servers>
         </settings>
         EOL
-      - mvn release:perform -s settings.xml
+      - mvn deploy -s settings.xml
 
     when:
       branch:
