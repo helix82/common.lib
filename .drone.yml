@@ -26,6 +26,20 @@ steps:
       - git config --global user.email "$GIT_EMAIL"
       - git config --global user.name "$GIT_USERNAME"
       - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -DautoVersionSubmodules=true -X
+      - |
+        cat > $GITHUB_WORKSPACE/settings.xml <<EOL
+        <settings>
+        <servers>
+        <server>
+        <id>nexus</id>
+        <username>$NEXUS_USERNAME</username>
+        <password>$NEXUS_PASSWORD</password>
+        </server>
+        </servers>
+        </settings>
+        EOL
+
+        mvn release:perform -s $GITHUB_WORKSPACE/settings.xml
 
       - if [ $? -eq 0 ]; then echo "Maven build was successful!"; exit 0; else echo "Maven build failed! Please check the logs for more details."; exit 1; fi
     when:
