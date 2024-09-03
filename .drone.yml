@@ -55,6 +55,7 @@ steps:
         mvn release:perform -s $GITHUB_WORKSPACE/settings.xml
 
       - if [ $? -eq 0 ]; then echo "Maven build was successful!"; exit 0; else echo "Maven build failed! Please check the logs for more details."; exit 1; fi
+    timeout: 300
     when:
       branch:
         - master
