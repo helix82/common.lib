@@ -37,7 +37,7 @@ steps:
     commands:
       - git config --global user.email "$GIT_EMAIL"
       - git config --global user.name "$GIT_USERNAME"
-      - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -DautoVersionSubmodules=true -X
+      - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -DautoVersionSubmodules=true -X > /dev/null 2>&1
       - |
         cat > settings.xml <<EOL
         <settings>
@@ -50,7 +50,7 @@ steps:
           </servers>
         </settings>
         EOL
-      - mvn deploy -s settings.xml
+      - mvn release:perform -s settings.xml
 
     when:
       branch:
