@@ -69,6 +69,7 @@ trigger:
       - push
       - pull_request
       - rollback
+      - tag
 
 volumes:
   - name: cache
