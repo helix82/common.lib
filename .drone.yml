@@ -47,6 +47,8 @@ steps:
 
       - if [ $? -eq 0 ]; then echo "Maven build was successful!"; exit 0; else echo "Maven build failed! Please check the logs for more details."; exit 1; fi
     when:
+      branch:
+        - master
       event:
         - push
         - tag
@@ -67,7 +69,6 @@ trigger:
       - push
       - pull_request
       - rollback
-      - tag
 
 volumes:
   - name: cache
