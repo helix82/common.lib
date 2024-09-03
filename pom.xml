@@ -50,7 +50,7 @@
                 <configuration>
                     <username>${git.username}</username>
                     <password>${git.token}</password>
-                    <preparationGoals>clean install</preparationGoals>
+
                 </configuration>
             </plugin>
 
