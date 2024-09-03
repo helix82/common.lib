@@ -13,7 +13,6 @@ steps:
   - name: release-plugin-prepare
     image: maven:3.8.4-openjdk-11
     environment:
-      MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
       DRONE_DEBUG: true
       GIT_USERNAME:
         from_secret: git_username
@@ -28,7 +27,7 @@ steps:
       - git config --global user.name "$GIT_USERNAME"
       - git fetch
       - git tag
-      - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -X
+      - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME
 
 
       - if [ $? -eq 0 ]; then echo "Maven build was successful!"; exit 0; else echo "Maven build failed! Please check the logs for more details."; exit 1; fi
@@ -44,7 +43,6 @@ steps:
   - name: release-plugin-perform
     image: maven:3.8.4-openjdk-11
     environment:
-      MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
       DRONE_DEBUG: true
       NEXUS_USERNAME:
         from_secret: nexus_username
