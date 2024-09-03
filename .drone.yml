@@ -8,11 +8,6 @@ steps:
     commands:
       - echo "Checking commit message..."
       - |
-        if echo "${DRONE_COMMIT_MESSAGE}" | grep -q "Merge pull request"; then
-          echo "Skipping build due to merge pull request"
-          exit 0
-        fi
-      - |
         if echo "${DRONE_COMMIT_MESSAGE}" | grep -q "\[maven-release-plugin\]"; then
           echo "Skipping build due to commit message"
           exit 1
@@ -23,9 +18,15 @@ steps:
           exit 0
         fi
         
+  - name: setup-java
+    image: eclipse-temurin:11-jdk
+    environment:
+      JAVA_HOME: /opt/java/openjdk
+    commands:
+      - echo "Setting up Java..."
 
   - name: release-plugin-prepare
-    image: maven:3.8.4-openjdk-11
+    image: eclipse-temurin:11-jdk
     environment:
       MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
       DRONE_DEBUG: true
