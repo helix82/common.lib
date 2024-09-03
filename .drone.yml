@@ -41,7 +41,7 @@ steps:
       GIT_EMAIL:
         from_secret: git_email
     commands:
-      - apt-get update && apt-get install -y git
+      - apt-get update && apt-get install -y git maven
       - git config --global user.email "$GIT_EMAIL"
       - git config --global user.name "$GIT_USERNAME"
       - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -DautoVersionSubmodules=true -X
