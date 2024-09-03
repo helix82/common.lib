@@ -8,6 +8,11 @@ steps:
     commands:
       - echo "Checking commit message..."
       - |
+        if echo "${DRONE_COMMIT_MESSAGE}" | grep -q "Merge pull request"; then
+          echo "Skipping build due to merge pull request"
+          exit 0
+        fi
+      - |
         if echo "${DRONE_COMMIT_MESSAGE}" | grep -q "\[maven-release-plugin\]"; then
           echo "Skipping build due to commit message"
           exit 1
