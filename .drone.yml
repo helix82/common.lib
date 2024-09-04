@@ -21,6 +21,7 @@ steps:
 
   - name: release-plugin-prepare
     image: maven:3.8.4-openjdk-11
+    pull: always
     environment:
       MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
       DRONE_DEBUG: true
@@ -39,7 +40,20 @@ steps:
       - git config --global user.email "$GIT_EMAIL"
       - git config --global user.name "$GIT_USERNAME"
       - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -DautoVersionSubmodules=true -X
-      - mvn release:perform -s settings.xml
+      - |
+        cat > $GITHUB_WORKSPACE/settings.xml <<EOL
+        <settings>
+        <servers>
+        <server>
+        <id>nexus</id>
+        <username>$NEXUS_USERNAME</username>
+        <password>$NEXUS_PASSWORD</password>
+        </server>
+        </servers>
+        </settings>
+        EOL
+
+        mvn release:perform -s $GITHUB_WORKSPACE/settings.xml        
 
     when:
       branch:
