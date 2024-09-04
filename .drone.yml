@@ -20,10 +20,6 @@ steps:
 
   - name: release-plugin-prepare
     image: maven:3.8.4-openjdk-11
-    privileged: true
-    timeout: 30m  # Timeout for the step
-    mem_limit: 5g  # Set a memory limit of 1GB
-    cpu_limit: 2.0  # Limit to 1 CPU core (1000m)
     environment:
       MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
       DRONE_DEBUG: true
