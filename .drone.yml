@@ -18,6 +18,10 @@ steps:
           exit 0
         fi
 
+  - name: cleanup
+    image: docker
+    commands:
+      - docker ps -aq | xargs -r docker rm -f || true
 
   - name: release-plugin-prepare
     image: maven:3.8.4-openjdk-11
