@@ -18,17 +18,12 @@ steps:
           exit 0
         fi
 
-  - name: cleanup
-    image: docker
-    commands:
-      - docker ps -aq | xargs -r docker rm -f || true
-    volumes:
-      - name: dockersock
-        path: /var/run/docker.sock
-
   - name: release-plugin-prepare
     image: maven:3.8.4-openjdk-11
-    pull: always
+    privileged: true
+    timeout: 30m  # Timeout for the step
+    mem_limit: 5g  # Set a memory limit of 1GB
+    cpu_limit: 2.0  # Limit to 1 CPU core (1000m)
     environment:
       MAVEN_OPTS: "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
       DRONE_DEBUG: true
@@ -72,6 +67,17 @@ steps:
         - refs/heads/master
         - refs/tags/*
 
+  - name: rebuild-cache
+    image: drillster/drone-volume-cache
+    volumes:
+      - name: cache
+        path: /cache
+    settings:
+      rebuild: true
+      mount:
+        - /cache
+    depends_on:
+      - build
 
 image_pull_secrets:
   - dockerconfig
@@ -88,5 +94,9 @@ trigger:
       - tag
 
 volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
   - name: cache
-    temp: {}
+    host:
+      path: /tmp/.buildx-cache
