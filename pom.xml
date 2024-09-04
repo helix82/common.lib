@@ -4,7 +4,7 @@
 
     <groupId>su.opencode.digsigcik</groupId>
     <artifactId>dtos</artifactId>
-    <version>1.0.42-SNAPSHOT</version>
+    <version>1.0.43-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -28,7 +28,7 @@
         <url>https://git.essocode.ru/o-code/dtos-events.git</url>
         <connection>scm:git:https://git.essocode.ru/o-code/dtos-events.git</connection>
         <developerConnection>scm:git:https://git.essocode.ru/o-code/dtos-events.git</developerConnection>
-      <tag>dtos-1.0.41</tag>
+      <tag>dtos-1.0.42</tag>
   </scm>
 
 
@@ -51,6 +51,7 @@
                     <username>${git.username}</username>
                     <password>${git.token}</password>
                     <preparationGoals>clean install</preparationGoals>
+                    <scmCommentPrefix>[CI SKIP] mvn release plugin</scmCommentPrefix>
                 </configuration>
             </plugin>
 
