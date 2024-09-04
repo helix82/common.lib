@@ -67,18 +67,6 @@ steps:
         - refs/heads/master
         - refs/tags/*
 
-  - name: rebuild-cache
-    image: drillster/drone-volume-cache
-    volumes:
-      - name: cache
-        path: /cache
-    settings:
-      rebuild: true
-      mount:
-        - /cache
-    depends_on:
-      - build
-
 image_pull_secrets:
   - dockerconfig
 
