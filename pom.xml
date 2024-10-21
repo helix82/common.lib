@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>su.opencode.digsigcik</groupId>
-    <artifactId>dtos</artifactId>
-    <version>1.0.51-SNAPSHOT</version>
+    <artifactId>common</artifactId>
+    <version>1.0.0</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
