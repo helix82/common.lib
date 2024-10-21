@@ -47,11 +47,11 @@
     </dependencies>
 
     <scm>
-        <url>https://git.essocode.ru/o-code/dtos-events.git</url>
-        <connection>scm:git:https://git.essocode.ru/o-code/dtos-events.git</connection>
-        <developerConnection>scm:git:https://git.essocode.ru/o-code/dtos-events.git</developerConnection>
-      <tag>dtos-1.0.42</tag>
-  </scm>
+        <url>https://git.essocode.ru/o-code/common.git</url>
+        <connection>scm:git:https://git.essocode.ru/o-code/common.git</connection>
+        <developerConnection>scm:git:https://git.essocode.ru/o-code/common.git</developerConnection>
+        <tag>common-1.0.0</tag>
+    </scm>
 
 
     <distributionManagement>
