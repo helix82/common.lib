@@ -46,13 +46,28 @@ public enum AuditLogEventEnum {
     TLS_CA_CERTS_CREATE(AuditLogTopicEnum.TLS_CA_CERTS, "Создание корневого или промежуточного TLS-сертификата"),
     TLS_CA_CERTS_DELETE(AuditLogTopicEnum.TLS_CA_CERTS, "Удаление корневого или промежуточного TLS-сертификата"),
 
+    @Deprecated(since = "правки по журналируемым событиям от 5 нобяря 2024 года")
     TLS_SERV_CERTS_UPLOAD(AuditLogTopicEnum.TLS_SERVER_CERTS, "Загрузка серверного сертификата TLS"),
+
+    TLS_SERV_CERTS_STEP_CA_CREATE(AuditLogTopicEnum.TLS_SERVER_CERTS, "Создание TLS-сертификата внутри ПЭПа"),
+    TLS_SERV_CERTS_FK_CREATE(AuditLogTopicEnum.TLS_SERVER_CERTS, "Создание TLS-сертификата из УЦ Федерального Казначейства"),
+    TLS_SERV_CERTS_NUC_CREATE(AuditLogTopicEnum.TLS_SERVER_CERTS, "Создание TLS-сертификата из НУЦ Минцифры"),
+    TLS_SERV_CERTS_OTHER_CA_CREATE(AuditLogTopicEnum.TLS_SERVER_CERTS, "Создание TLS-сертификата от остальных поставщиков"),
+
     TLS_SERV_CERTS_DELETE(AuditLogTopicEnum.TLS_SERVER_CERTS, "Удаление серверного сертификата TLS"),
     TLS_SERV_CERTS_REISSUE(AuditLogTopicEnum.TLS_SERVER_CERTS, "Перевыпуск серверного сертификата TLS"),
     TLS_SERV_CERTS_REVOKE(AuditLogTopicEnum.TLS_SERVER_CERTS, "Отзыв серверного сертификата TLS"),
 
-    TLS_CERTS_ORDER_UPLOAD(AuditLogTopicEnum.TLS_CERTS_ORDER, "Отзыв серверного сертификата TLS"),
+    TLS_CERTS_ORDER_STEP_CA(AuditLogTopicEnum.TLS_CERTS_ORDER, "Создание заявления на выпуск TLS-сертификата внутри ПЭПа"),
+    TLS_CERTS_ORDER_FK(AuditLogTopicEnum.TLS_CERTS_ORDER, "Создание заявления на выпуск TLS-сертификата для УЦ Федерального Казначейства"),
+    TLS_CERTS_ORDER_NUC(AuditLogTopicEnum.TLS_CERTS_ORDER, "Создание заявления на выпуск TLS-сертификата для НУЦ Минцифры"),
+    TLS_CERTS_ORDER_OTHER_CA(AuditLogTopicEnum.TLS_CERTS_ORDER, "Создание заявления на выпуск TLS-сертификата для остальных поставщиков"),
+
+    @Deprecated(since = "правки по журналируемым событиям от 5 нобяря 2024 года")
+    TLS_CERTS_ORDER_UPLOAD(AuditLogTopicEnum.TLS_CERTS_ORDER, "Загрузка серверного сертификата TLS"),
+    @Deprecated(since = "правки по журналируемым событиям от 5 нобяря 2024 года")
     TLS_CERTS_ORDER_DELETE(AuditLogTopicEnum.TLS_CERTS_ORDER, "Отзыв серверного сертификата TLS"),
+    @Deprecated(since = "правки по журналируемым событиям от 5 нобяря 2024 года")
     TLS_CERTS_ORDER_CERT_RELEASE(AuditLogTopicEnum.TLS_CERTS_ORDER, "Выпуск серверного сертификата TLS"),
 
     M4D_CREATE(AuditLogTopicEnum.M4D, "Добавление МЧД"),
