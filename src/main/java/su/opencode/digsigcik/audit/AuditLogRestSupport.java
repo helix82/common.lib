@@ -8,7 +8,10 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StopWatch;
+
+import java.util.Map;
 
 @Aspect
 @RequiredArgsConstructor
@@ -46,6 +49,59 @@ public class AuditLogRestSupport {
             timeElapsed = proceedMethodElapsingTime(proceedingJoinPoint);
             wasSuccessful = true;
             severity = AuditSeverityEnum.INFO;
+
+            // FIXME: see tls.service:CertificateController:certInfo(Certificate certificate)
+            if (event.getTopic() == AuditLogTopicEnum.TLS_CERTS_ORDER && resultCache instanceof ResponseEntity && ((ResponseEntity<?>) resultCache).getBody() instanceof Map)
+            {
+
+                String provider = "";
+                try {
+                    log.info("Attempting logging TLS_CERTS_ORDER topic event using provider {}", provider);
+                    provider = (String) ((Map<?, ?>) ((ResponseEntity<?>) resultCache).getBody()).get("provider");
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+
+                switch (provider) {
+                    case "ЦС СЭП (Step CA)":
+                        event = AuditLogEventEnum.TLS_CERTS_ORDER_STEP_CA;
+                        break;
+                    case "НУЦ Минцифры":
+                        event = AuditLogEventEnum.TLS_CERTS_ORDER_NUC;
+                        break;
+                    case "УЦ ФК":
+                        event = AuditLogEventEnum.TLS_CERTS_ORDER_FK;
+                        break;
+                    default:
+                        event = AuditLogEventEnum.TLS_CERTS_ORDER_OTHER_CA;
+                }
+            }
+            if (event.equals(AuditLogEventEnum.TLS_SERV_CERTS_UPLOAD) && resultCache instanceof ResponseEntity && ((ResponseEntity<?>) resultCache).getBody() instanceof Map)
+            {
+
+                String provider = "";
+                try {
+                    log.info("Attempting logging TLS_SERV_CERTS_UPLOAD topic event using provider {}", provider);
+                    provider = (String) ((Map<?, ?>) ((ResponseEntity<?>) resultCache).getBody()).get("provider");
+                } catch (Exception ex) {
+                    log.error(ex.getMessage());
+                }
+
+                switch (provider) {
+                    case "ЦС СЭП (Step CA)":
+                        event = AuditLogEventEnum.TLS_SERV_CERTS_STEP_CA_CREATE;
+                        break;
+                    case "НУЦ Минцифры":
+                        event = AuditLogEventEnum.TLS_SERV_CERTS_NUC_CREATE;
+                        break;
+                    case "УЦ ФК":
+                        event = AuditLogEventEnum.TLS_SERV_CERTS_FK_CREATE;
+                        break;
+                    default:
+                        event = AuditLogEventEnum.TLS_SERV_CERTS_OTHER_CA_CREATE;
+                }
+            }
+
         } catch (Throwable ex) {
 
             String msg = ex.getClass().getName() + " (" + ex.getMessage() + ")";
@@ -76,15 +132,20 @@ public class AuditLogRestSupport {
         return ((MethodSignature) proceedingJoinPoint.getSignature()).getMethod().getAnnotation(AuditLogThis.class);
     }
 
+    Object resultCache;
+
     private long proceedMethodElapsingTime(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+
+        resultCache = null;
+
         if (getAnnotation(proceedingJoinPoint).markExecutionTime()) {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start(proceedingJoinPoint.hashCode() + "");
-            proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
+            resultCache = proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
             stopWatch.stop();
             return stopWatch.getTotalTimeMillis();
         } else {
-            proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
+            resultCache = proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
             return -1L;
         }
     }
