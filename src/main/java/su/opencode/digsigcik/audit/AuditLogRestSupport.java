@@ -2,6 +2,7 @@ package su.opencode.digsigcik.audit;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.text.StringEscapeUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,7 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StopWatch;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Aspect
 @RequiredArgsConstructor
@@ -23,6 +26,8 @@ public class AuditLogRestSupport {
     private String username;
 
     private final AuditLogRestService auditLogRestService;
+
+    private final AuditDataSerializer auditDataSerializer = new AuditDataSerializer(new AuditDataFilter());
 
     @Pointcut("@annotation(su.opencode.digsigcik.audit.AuditLogThis)")
     public void annotatedMethodsProvider() {
@@ -38,7 +43,8 @@ public class AuditLogRestSupport {
         log.info("Logging: {}", annotation);
 
         // TODO: переработать парсинг/фильтр объектов
-        String inputData = "{ \"status\": \"Done\" }";
+//        String inputData = "{ \"status\": \"Done\" }";
+        String inputData = serialize(proceedingJoinPoint.getArgs());
         String outputData = "{ \"status\": \"Done\" }";
 
         boolean wasSuccessful = false;
@@ -49,6 +55,7 @@ public class AuditLogRestSupport {
             timeElapsed = proceedMethodElapsingTime(proceedingJoinPoint);
             wasSuccessful = true;
             severity = AuditSeverityEnum.INFO;
+            outputData = serialize(resultCache);
 
             // FIXME: see tls.service:OrderController:createOrder/createOrderJson
             // FIXME: see tls.service:AcmeServiceImp:orderInfo
@@ -149,6 +156,24 @@ public class AuditLogRestSupport {
         } else {
             resultCache = proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
             return -1L;
+        }
+    }
+
+    // FIXME: refactoooor (Данияр)
+    private String serialize(Object object) {
+        return serialize(new Object[] { object });
+    }
+
+    private String serialize(Object[] objects) {
+        try {
+            var filtered = Arrays.stream(objects)
+                    .filter(object -> !(object instanceof String))
+                    .collect(Collectors.toList());
+
+            return StringEscapeUtils.unescapeJava(auditDataSerializer.toJson(filtered));
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return "{}";
         }
     }
 }
