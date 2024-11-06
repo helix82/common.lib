@@ -50,7 +50,8 @@ public class AuditLogRestSupport {
             wasSuccessful = true;
             severity = AuditSeverityEnum.INFO;
 
-            // FIXME: see tls.service:CertificateController:certInfo(Certificate certificate)
+            // FIXME: see tls.service:OrderController:createOrder/createOrderJson
+            // FIXME: see tls.service:AcmeServiceImp:orderInfo
             if (event.getTopic() == AuditLogTopicEnum.TLS_CERTS_ORDER && resultCache instanceof ResponseEntity && ((ResponseEntity<?>) resultCache).getBody() instanceof Map)
             {
 
@@ -59,7 +60,7 @@ public class AuditLogRestSupport {
                     log.info("Attempting logging TLS_CERTS_ORDER topic event using provider {}", provider);
                     provider = (String) ((Map<?, ?>) ((ResponseEntity<?>) resultCache).getBody()).get("provider");
                 } catch (Exception ex) {
-                    log.error(ex.getMessage());
+                    log.warn("Не был найден provider в результирующей мапе: {}", ex.getMessage());
                 }
 
                 switch (provider) {
@@ -76,6 +77,7 @@ public class AuditLogRestSupport {
                         event = AuditLogEventEnum.TLS_CERTS_ORDER_OTHER_CA;
                 }
             }
+            // FIXME: see tls.service:CertificateController:certInfo(Certificate certificate)
             if (event.equals(AuditLogEventEnum.TLS_SERV_CERTS_UPLOAD) && resultCache instanceof ResponseEntity && ((ResponseEntity<?>) resultCache).getBody() instanceof Map)
             {
 
@@ -84,7 +86,7 @@ public class AuditLogRestSupport {
                     log.info("Attempting logging TLS_SERV_CERTS_UPLOAD topic event using provider {}", provider);
                     provider = (String) ((Map<?, ?>) ((ResponseEntity<?>) resultCache).getBody()).get("provider");
                 } catch (Exception ex) {
-                    log.error(ex.getMessage());
+                    log.warn("Не был найден provider в результирующей мапе: {}", ex.getMessage());
                 }
 
                 switch (provider) {
