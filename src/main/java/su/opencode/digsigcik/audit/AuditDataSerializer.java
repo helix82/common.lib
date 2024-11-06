@@ -2,7 +2,6 @@ package su.opencode.digsigcik.audit;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
@@ -10,9 +9,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class AuditDataSerializer {
-
-    @Autowired
-    private AuditDataFilter auditDataFilter;
 
     private final Gson gson;
 
