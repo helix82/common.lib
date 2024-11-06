@@ -30,6 +30,11 @@ public class AuditDataSerializer {
                 );
     }
 
+    @Deprecated(since = "должна быть фильтрация, встроенная или кастомная")
+    public String tryParseMap(Map objects) {
+        return gson.toJson(objects);
+    }
+
     @Deprecated
     public Map<String, Object> toMap(List<Object> objects) {
         return gson.fromJson(

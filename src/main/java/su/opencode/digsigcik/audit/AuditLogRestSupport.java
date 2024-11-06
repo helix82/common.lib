@@ -159,8 +159,12 @@ public class AuditLogRestSupport {
         }
     }
 
-    // FIXME: refactoooor (Данияр)
+    // FIXME: refactoooor и фильтрация полей (Данияр)
     private String serialize(Object object) {
+
+        if (object instanceof Map)
+            return auditDataSerializer.tryParseMap((Map) object);
+
         return serialize(new Object[] { object });
     }
 
