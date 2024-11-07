@@ -49,10 +49,12 @@ public class AuditLogRestSupport {
 
         boolean wasSuccessful = false;
         AuditSeverityEnum severity = AuditSeverityEnum.ERROR;
-        long timeElapsed = 0L;
+        long timeElapsed = -1L;
 
         try {
-            timeElapsed = proceedMethodElapsingTime(proceedingJoinPoint);
+            var struct = proceedMethodElapsingTime(proceedingJoinPoint);
+            Object resultCache = struct.object;
+            timeElapsed = struct.timeElapsedMillis;
             wasSuccessful = true;
             severity = AuditSeverityEnum.INFO;
             outputData = serialize(resultCache);
@@ -71,13 +73,13 @@ public class AuditLogRestSupport {
                 }
 
                 switch (provider) {
-                    case "ЦС СЭП (Step CA)":
+                    case "ЦС ПЭП":
                         event = AuditLogEventEnum.TLS_CERTS_ORDER_STEP_CA;
                         break;
                     case "НУЦ Минцифры":
                         event = AuditLogEventEnum.TLS_CERTS_ORDER_NUC;
                         break;
-                    case "УЦ ФК":
+                    case "УЦ Казначейства России":
                         event = AuditLogEventEnum.TLS_CERTS_ORDER_FK;
                         break;
                     default:
@@ -97,19 +99,21 @@ public class AuditLogRestSupport {
                 }
 
                 switch (provider) {
-                    case "ЦС СЭП (Step CA)":
+                    case "ЦС ПЭП":
                         event = AuditLogEventEnum.TLS_SERV_CERTS_STEP_CA_CREATE;
                         break;
                     case "НУЦ Минцифры":
                         event = AuditLogEventEnum.TLS_SERV_CERTS_NUC_CREATE;
                         break;
-                    case "УЦ ФК":
+                    case "УЦ Казначейства России":
                         event = AuditLogEventEnum.TLS_SERV_CERTS_FK_CREATE;
                         break;
                     default:
                         event = AuditLogEventEnum.TLS_SERV_CERTS_OTHER_CA_CREATE;
                 }
             }
+
+            return struct.object;
 
         } catch (Throwable ex) {
 
@@ -132,30 +136,39 @@ public class AuditLogRestSupport {
                             .build()
             );
         }
-
-
-        return null;
     }
 
     private AuditLogThis getAnnotation(ProceedingJoinPoint proceedingJoinPoint) {
         return ((MethodSignature) proceedingJoinPoint.getSignature()).getMethod().getAnnotation(AuditLogThis.class);
     }
 
-    Object resultCache;
-
-    private long proceedMethodElapsingTime(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-
-        resultCache = null;
+    private ObjectTimeStruct proceedMethodElapsingTime(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 
         if (getAnnotation(proceedingJoinPoint).markExecutionTime()) {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start(proceedingJoinPoint.hashCode() + "");
-            resultCache = proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
+            Object operationResult = proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
             stopWatch.stop();
-            return stopWatch.getTotalTimeMillis();
+            return new ObjectTimeStruct(operationResult, stopWatch.getLastTaskTimeMillis());
         } else {
-            resultCache = proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs());
-            return -1L;
+            return new ObjectTimeStruct(proceedingJoinPoint.proceed(proceedingJoinPoint.getArgs()));
+        }
+    }
+
+    // record
+    private static class ObjectTimeStruct {
+        final Object object;
+        final Long timeElapsedMillis;
+        final String timeString;
+
+        public ObjectTimeStruct(Object object) {
+            this(object, -1L);
+        }
+
+        public ObjectTimeStruct(Object object, Long timeElapsed) {
+            this.object = object;
+            this.timeElapsedMillis = timeElapsed;
+            this.timeString = String.format("{ \"Время исполнения\": \"%d мс.\" }", timeElapsedMillis);
         }
     }
 

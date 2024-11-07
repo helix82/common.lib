@@ -12,7 +12,9 @@ public enum AuditLogEventEnum {
     USER_LOGIN(AuditLogTopicEnum.AUTH, "Пользователь вошел в СЭП"),
     USER_LOGOUT(AuditLogTopicEnum.AUTH, "Пользователь вышел из СЭП"),
 
+    @Deprecated(since = "Пока не ясна необходимость")
     TEMPLATE_UPLOAD(AuditLogTopicEnum.TEMPLATE, "Загрузка шаблона заявления в СЭП"),
+    @Deprecated(since = "Пока не ясна необходимость")
     TEMPLATE_DELETE(AuditLogTopicEnum.TEMPLATE, "Удаление шаблона заявленияиз СЭП"),
 
     CA_CERT_UPLOAD(AuditLogTopicEnum.CA_CERTS, "Добавление сертификата аккредитованного УЦ"),
@@ -23,6 +25,7 @@ public enum AuditLogEventEnum {
     TRUST_CERTS_DELETE(AuditLogTopicEnum.TRUST_CERTS, "Удаление сертификата доверенного УЦ"),
 
     USER_CERTS_UPLOAD(AuditLogTopicEnum.USER_CERT, "Добавление сертификата пользователя"),
+    @Deprecated(since = "был дебаг, сейчас не нужно")
     USER_CERTS_PARSE(AuditLogTopicEnum.USER_CERT, "Считывание сертификата пользователя"),
     USER_CERTS_DELETE(AuditLogTopicEnum.USER_CERT, "Удаление связи с сертификатом пользователя"),
 
@@ -38,9 +41,9 @@ public enum AuditLogEventEnum {
     DIG_SIGN_CREATE(AuditLogTopicEnum.GENERAL_SIGN, "Формирование ЭП с помощью КЭП или НЭП"),
     DIG_SIGN_VERIFY(AuditLogTopicEnum.GENERAL_SIGN, "Выполнена проверка ЭП"),
 
-    TLS_SERV_PROVIDER_UPLOAD(AuditLogTopicEnum.TLS_SERV_PROVIDER, "Загрузка справочника постовщика TLS-сертификата"),
-    TLS_SERV_PROVIDER_UPDATE(AuditLogTopicEnum.TLS_SERV_PROVIDER, "Обновление справочника постовщика TLS-сертификата"),
-    TLS_SERV_PROVIDER_DELETE(AuditLogTopicEnum.TLS_SERV_PROVIDER, "Загрузка справочника постовщика TLS-сертификата"),
+    TLS_SERV_PROVIDER_UPLOAD(AuditLogTopicEnum.TLS_SERV_PROVIDER, "Загрузка справочника поставщика TLS-сертификата"),
+    TLS_SERV_PROVIDER_UPDATE(AuditLogTopicEnum.TLS_SERV_PROVIDER, "Обновление справочника поставщика TLS-сертификата"),
+    TLS_SERV_PROVIDER_DELETE(AuditLogTopicEnum.TLS_SERV_PROVIDER, "Загрузка справочника поставщика TLS-сертификата"),
 
     TLS_CA_CERTS_UPLOAD(AuditLogTopicEnum.TLS_CA_CERTS, "Загрузка корневого или промежуточного TLS-сертификата"),
     TLS_CA_CERTS_CREATE(AuditLogTopicEnum.TLS_CA_CERTS, "Создание корневого или промежуточного TLS-сертификата"),
