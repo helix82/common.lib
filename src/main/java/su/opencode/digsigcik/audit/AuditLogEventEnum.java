@@ -24,6 +24,9 @@ public enum AuditLogEventEnum {
     TRUST_CERTS_UPLOAD(AuditLogTopicEnum.TRUST_CERTS, "Добавление сертификата доверенного УЦ"),
     TRUST_CERTS_DELETE(AuditLogTopicEnum.TRUST_CERTS, "Удаление сертификата доверенного УЦ"),
 
+    USER_CERTS_ORDER_ADDED(AuditLogTopicEnum.USER_CERT, "Добавление заявления на выпуск СКП ЭП"),
+    USER_CERTS_ORDER_DELETED(AuditLogTopicEnum.USER_CERT, "Удаление заявления на выпуск СКП ЭП"),
+
     USER_CERTS_UPLOAD(AuditLogTopicEnum.USER_CERT, "Добавление сертификата пользователя"),
     @Deprecated(since = "был дебаг, сейчас не нужно")
     USER_CERTS_PARSE(AuditLogTopicEnum.USER_CERT, "Считывание сертификата пользователя"),
