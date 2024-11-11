@@ -4,7 +4,7 @@
 
     <groupId>su.opencode.digsigcik</groupId>
     <artifactId>common</artifactId>
-    <version>1.0.12-SNAPSHOT</version>
+    <version>1.0.12</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -116,7 +116,7 @@
         <url>https://git.essocode.ru/o-code/common.git</url>
         <connection>scm:git:https://git.essocode.ru/o-code/common.git</connection>
         <developerConnection>scm:git:https://git.essocode.ru/o-code/common.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>common-1.0.12</tag>
   </scm>
 
 
