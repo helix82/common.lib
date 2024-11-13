@@ -78,8 +78,6 @@ steps:
         
         echo "Файл release_notes.txt создан."
 
-    depends_on:
-      - release
     when:
       branch:
         - release-*
