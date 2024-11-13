@@ -48,6 +48,74 @@ steps:
         - refs/heads/master
         - refs/tags/*
 
+  - name: update-release-notes
+    image: alpine
+    environment:
+      DRONE_DEBUG: true
+    commands:
+      - apk add --no-cache jq git
+      - set -x
+      - |
+        START_COMMIT="0.0.0"
+        END_COMMIT="HEAD"
+        if ! git show $START_COMMIT &> /dev/null; then
+            START_COMMIT="$(git rev-list --max-parents=0 HEAD)"
+        fi
+        
+        commit_list=$(git log --pretty=format:'%s' $START_COMMIT..$END_COMMIT)
+        echo "Список коммитов:"
+        echo "$commit_list"
+        
+        if [ -z "$commit_list" ]; then
+            echo "Нет коммитов в выбранном диапазоне."
+            exit 0
+        fi
+        
+        commit_list=$(git log --pretty=format:'%s' $START_COMMIT..$END_COMMIT)
+        release_notes=$(echo "$commit_list" | grep -vE "^(Merge|Revert|fixup!|squash!|docs\:|style\:|chore\:|build\:|test\:)")
+        release_notes=$(echo "$release_notes" | awk '!seen[$0]++')
+        echo "$release_notes" > release_notes.txt
+        
+        echo "Файл release_notes.txt создан."
+
+    depends_on:
+      - release
+    when:
+      branch:
+        - release-*
+
+  - name: push-src-to-git.cifro.tech
+    image: alpine:3.12
+    environment:
+      DRONE_DEBUG: true
+      GITLAB_PAT_TOKEN:
+        from_secret: gitlab_pat_token
+    commands:
+      - set -x
+      - apk add --no-cache git rsync
+      - git config --global user.name "SEP CI"
+      - git config --global user.email "sep_user@cifro.tech"
+      - echo "$GITLAB_PAT_TOKEN"
+      - git clone https://x-access-token:$GITLAB_PAT_TOKEN@git.cifro.tech/sep/lib/common.lib repo
+      - cd repo
+      - echo "Создаем новую ветку"
+      - NEW_BRANCH_NAME=$(echo ${DRONE_SOURCE_BRANCH} | sed 's/^release-//')
+      - git checkout -b $NEW_BRANCH_NAME
+      - echo "Копируем содержимое, исключая папку repo"
+      - rsync -av --exclude='repo' ../* .
+      - echo "Добавляем изменения"
+      - git add .
+      - git commit -m "Релиз версии $NEW_BRANCH_NAME"
+      - echo "Пушим новую ветку на удаленный репозиторий"
+      - git push https://x-access-token:$GITLAB_PAT_TOKEN@git.cifro.tech/sep/lib/common.lib $NEW_BRANCH_NAME
+      - cd ..
+      - rm -rf repo
+    depends_on:
+      - update-release-notes
+    when:
+      branch:
+        - release-*
+
 #    TODO: дискорд забанен, после того как будет добавлен новый мессенджер, изменить
 #  - name: notify
 #    image: appleboy/drone-discord
