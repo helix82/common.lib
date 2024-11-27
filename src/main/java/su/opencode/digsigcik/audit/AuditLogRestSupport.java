@@ -1,5 +1,6 @@
 package su.opencode.digsigcik.audit;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
@@ -30,9 +31,7 @@ public class AuditLogRestSupport {
     private final AuditDataSerializer auditDataSerializer = new AuditDataSerializer(new AuditDataFilter());
 
     @Pointcut("@annotation(su.opencode.digsigcik.audit.AuditLogThis)")
-    public void annotatedMethodsProvider() {
-
-    }
+    public void annotatedMethodsProvider() { }
 
     @Around("annotatedMethodsProvider()")
     public Object logMethod(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
@@ -44,7 +43,7 @@ public class AuditLogRestSupport {
 
         // TODO: переработать парсинг/фильтр объектов
 //        String inputData = "{ \"status\": \"Done\" }";
-        String inputData = serialize(proceedingJoinPoint.getArgs());
+        String inputData = trySerialize(proceedingJoinPoint.getArgs());
         String outputData = "{ \"status\": \"Done\" }";
 
         boolean wasSuccessful = false;
@@ -53,64 +52,67 @@ public class AuditLogRestSupport {
 
         try {
             var struct = proceedMethodElapsingTime(proceedingJoinPoint);
-            Object resultCache = struct.object;
-            timeElapsed = struct.timeElapsedMillis;
+            Object resultCache = struct.getObject();
+            timeElapsed = struct.getTimeElapsedMillis();
             wasSuccessful = true;
             severity = AuditSeverityEnum.INFO;
-            outputData = serialize(resultCache);
+            outputData = trySerialize(resultCache);
 
-            // FIXME: see tls.service:OrderController:createOrder/createOrderJson
-            // FIXME: see tls.service:AcmeServiceImp:orderInfo
-            if (event.getTopic() == AuditLogTopicEnum.TLS_CERTS_ORDER && resultCache instanceof ResponseEntity && ((ResponseEntity<?>) resultCache).getBody() instanceof Map)
-            {
+            try {
+                // FIXME: see tls.service:OrderController:createOrder/createOrderJson
+                // FIXME: see tls.service:AcmeServiceImp:orderInfo
+                if (event.getTopic() == AuditLogTopicEnum.TLS_CERTS_ORDER && resultCache instanceof ResponseEntity && ((ResponseEntity<?>) resultCache).getBody() instanceof Map) {
 
-                String provider = "";
-                try {
-                    log.info("Attempting logging TLS_CERTS_ORDER topic event using provider {}", provider);
-                    provider = (String) ((Map<?, ?>) ((ResponseEntity<?>) resultCache).getBody()).get("provider");
-                } catch (Exception ex) {
-                    log.warn("Не был найден provider в результирующей мапе: {}", ex.getMessage());
+                    String provider = "";
+                    try {
+                        log.info("Attempting logging TLS_CERTS_ORDER topic event using provider {}", provider);
+                        provider = (String) ((Map<?, ?>) ((ResponseEntity<?>) resultCache).getBody()).get("provider");
+                    } catch (Exception ex) {
+                        log.warn("Не был найден provider в результирующей мапе: {}", ex.getMessage());
+                    }
+
+                    switch (provider) {
+                        case "ЦС ПЭП":
+                            event = AuditLogEventEnum.TLS_CERTS_ORDER_STEP_CA;
+                            break;
+                        case "НУЦ Минцифры":
+                            event = AuditLogEventEnum.TLS_CERTS_ORDER_NUC;
+                            break;
+                        case "УЦ Казначейства России":
+                            event = AuditLogEventEnum.TLS_CERTS_ORDER_FK;
+                            break;
+                        default:
+                            event = AuditLogEventEnum.TLS_CERTS_ORDER_OTHER_CA;
+                    }
+                }
+                // FIXME: see tls.service:CertificateController:certInfo(Certificate certificate)
+                if (event.equals(AuditLogEventEnum.TLS_SERV_CERTS_UPLOAD) && resultCache instanceof ResponseEntity && ((ResponseEntity<?>) resultCache).getBody() instanceof Map) {
+
+                    String provider = "";
+                    try {
+                        log.info("Attempting logging TLS_SERV_CERTS_UPLOAD topic event using provider {}", provider);
+                        provider = (String) ((Map<?, ?>) ((ResponseEntity<?>) resultCache).getBody()).get("provider");
+                    } catch (Exception ex) {
+                        log.warn("Не был найден provider в результирующей мапе: {}", ex.getMessage());
+                    }
+
+                    switch (provider) {
+                        case "ЦС ПЭП":
+                            event = AuditLogEventEnum.TLS_SERV_CERTS_STEP_CA_CREATE;
+                            break;
+                        case "НУЦ Минцифры":
+                            event = AuditLogEventEnum.TLS_SERV_CERTS_NUC_CREATE;
+                            break;
+                        case "УЦ Казначейства России":
+                            event = AuditLogEventEnum.TLS_SERV_CERTS_FK_CREATE;
+                            break;
+                        default:
+                            event = AuditLogEventEnum.TLS_SERV_CERTS_OTHER_CA_CREATE;
+                    }
                 }
 
-                switch (provider) {
-                    case "ЦС ПЭП":
-                        event = AuditLogEventEnum.TLS_CERTS_ORDER_STEP_CA;
-                        break;
-                    case "НУЦ Минцифры":
-                        event = AuditLogEventEnum.TLS_CERTS_ORDER_NUC;
-                        break;
-                    case "УЦ Казначейства России":
-                        event = AuditLogEventEnum.TLS_CERTS_ORDER_FK;
-                        break;
-                    default:
-                        event = AuditLogEventEnum.TLS_CERTS_ORDER_OTHER_CA;
-                }
-            }
-            // FIXME: see tls.service:CertificateController:certInfo(Certificate certificate)
-            if (event.equals(AuditLogEventEnum.TLS_SERV_CERTS_UPLOAD) && resultCache instanceof ResponseEntity && ((ResponseEntity<?>) resultCache).getBody() instanceof Map)
-            {
-
-                String provider = "";
-                try {
-                    log.info("Attempting logging TLS_SERV_CERTS_UPLOAD topic event using provider {}", provider);
-                    provider = (String) ((Map<?, ?>) ((ResponseEntity<?>) resultCache).getBody()).get("provider");
-                } catch (Exception ex) {
-                    log.warn("Не был найден provider в результирующей мапе: {}", ex.getMessage());
-                }
-
-                switch (provider) {
-                    case "ЦС ПЭП":
-                        event = AuditLogEventEnum.TLS_SERV_CERTS_STEP_CA_CREATE;
-                        break;
-                    case "НУЦ Минцифры":
-                        event = AuditLogEventEnum.TLS_SERV_CERTS_NUC_CREATE;
-                        break;
-                    case "УЦ Казначейства России":
-                        event = AuditLogEventEnum.TLS_SERV_CERTS_FK_CREATE;
-                        break;
-                    default:
-                        event = AuditLogEventEnum.TLS_SERV_CERTS_OTHER_CA_CREATE;
-                }
+            } catch (Exception exception) {
+                log.error("Здесь какая-то ошибка 4458: {}", exception.getMessage());
             }
 
             return struct.object;
@@ -123,7 +125,7 @@ public class AuditLogRestSupport {
             throw ex;
 
         } finally {
-            auditLogRestService.sendLogEvent(
+            auditLogRestService.trySendLogEvent(
                     AuditLogEvent
                             .builder()
                             .login(username)
@@ -155,11 +157,12 @@ public class AuditLogRestSupport {
         }
     }
 
-    // record
+    @Data
     private static class ObjectTimeStruct {
-        final Object object;
-        final Long timeElapsedMillis;
-        final String timeString;
+
+        Object object;
+        Long timeElapsedMillis = -1L;
+        String timeString;
 
         public ObjectTimeStruct(Object object) {
             this(object, -1L);
@@ -173,15 +176,20 @@ public class AuditLogRestSupport {
     }
 
     // FIXME: refactoooor и фильтрация полей (Данияр)
-    private String serialize(Object object) {
+    private String trySerialize(Object object) {
+        try {
+            if (object instanceof Map)
+                return auditDataSerializer.tryParseMap((Map) object);
 
-        if (object instanceof Map)
-            return auditDataSerializer.tryParseMap((Map) object);
+            return trySerialize(new Object[] { object });
 
-        return serialize(new Object[] { object });
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return "{}";
+        }
     }
 
-    private String serialize(Object[] objects) {
+    private String trySerialize(Object[] objects) {
         try {
             var filtered = Arrays.stream(objects)
                     .filter(object -> !(object instanceof String))

@@ -26,8 +26,16 @@ public class AuditLogRestService {
     private URI auditEndpointUrl;
 
 
-    @SneakyThrows(JsonProcessingException.class)
-    public void sendLogEvent(AuditLogEvent auditLogEvent) {
+    public void trySendLogEvent(AuditLogEvent auditLogEvent) {
+        try {
+            sendLogEvent(auditLogEvent);
+        } catch (Exception exception) {
+            // TODO: refactor (Данияр)
+            log.error("Ошибка при попытке отправить новую запись журнала в synapi: {}", exception.getMessage());
+        }
+    }
+
+    public void sendLogEvent(AuditLogEvent auditLogEvent) throws JsonProcessingException {
 
         String json = mapper.writeValueAsString(auditLogEvent);
         log.debug("Sending event: {}", json);
