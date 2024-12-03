@@ -101,3 +101,4 @@ distributionManagement и scm используются переменные, к�
 # 📦 Требования
 - Java: 11
 - Spring Boot: 2.7
+- 
