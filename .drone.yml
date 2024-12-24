@@ -19,11 +19,18 @@ steps:
         from_secret: nexus_password
       GIT_EMAIL:
         from_secret: git_email
+      SCM_URL:
+        from_secret: scm_url
+      SCM_CONNECTION:
+        from_secret: scm_connection
+      SCM_DEV_CONNECTION:
+        from_secret: scm_dev_connection
     commands:
       - apt-get update && apt-get install -y git
       - git config --global user.email "$GIT_EMAIL"
       - git config --global user.name "$GIT_USERNAME"
-      - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -DautoVersionSubmodules=true -X
+      - printenv
+      - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME Dgit.scm.url=$SCM_URL -Dgit.scm.connection=$SCM_CONNECTION -Dgit.scm.developerConnection=$SCM_DEV_CONNECTION -DautoVersionSubmodules=true -X
       - |
         cat > $GITHUB_WORKSPACE/settings.xml <<EOL
         <settings>
@@ -36,8 +43,7 @@ steps:
         </servers>
         </settings>
         EOL
-
-        mvn release:perform -s $GITHUB_WORKSPACE/settings.xml        
+      - mvn release:perform -s $GITHUB_WORKSPACE/settings.xml -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -Dgit.scm.url=$SCM_URL -Dgit.scm.connection=$SCM_CONNECTION -Dgit.scm.developerConnection=$SCM_DEV_CONNECTION -Dmaven.wagon.http.ssl.insecure=true -DautoVersionSubmodules=true -X
 
     when:
       branch:

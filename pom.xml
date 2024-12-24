@@ -113,9 +113,9 @@
     </dependencies>
 
     <scm>
-        <url>https://git.essocode.ru/o-code/common.git</url>
-        <connection>scm:git:https://git.essocode.ru/o-code/common.git</connection>
-        <developerConnection>scm:git:https://git.essocode.ru/o-code/common.git</developerConnection>
+        <url>${git.scm.url}</url>
+        <connection>${git.scm.connection}</connection>
+        <developerConnection>${git.scm.developerConnection}</developerConnection>
       <tag>HEAD</tag>
   </scm>
 

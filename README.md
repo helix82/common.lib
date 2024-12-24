@@ -1,4 +1,5 @@
 # Общая библиотека ПЭП
+Примечание: Инструкция по настройке CI/CD для деплоя в Nexus представлена в разделе "Процесс деплоя с использованием Maven Release Plugin и CI/CD", пункт 5.
 
 📖 **Описание**
 
@@ -73,7 +74,6 @@ distributionManagement и scm используются переменные, к�
 
 | Переменная                  | Описание                                                                                   |
 |-----------------------------|-------------------------------------------------------------------------------------------|
-| `nexus.repository.url`      | URL репозитория Nexus, куда будет загружен артефакт (например, `https://nexus.repo.url/repository/releases`). |
 | `git.scm.url`               | URL репозитория, в котором хранится исходный код проекта.                                  |
 | `git.scm.connection`        | SCM соединение для репозитория, например, `scm:git:https://repo.url.git`.                  |
 | `git.scm.developerConnection` | Соединение разработчика для работы с репозиторием, например, `scm:git:https://repo.url.git`. |
@@ -81,9 +81,53 @@ distributionManagement и scm используются переменные, к�
 | `git.token`                 | Токен для аутентификации в SCM репозитории.                                               |
 
 
-**5. CI/CD интеграция:**
+**5. Инструкция для настройки CI/CD процесса для размещения библиотеки в Nexus:**
 
-Интеграция через CI/CD пайплайн позволяет автоматизировать процесс деплоя. В качестве примера настройки CI/CD можно посмотреть .drone.yml в корне проекта.
+1. Настройка CI/CD
+
+   Адаптируйте процесс CI/CD, используя файл drone.yaml (находящийся в корне проекта), а именно, адаптируйте шаг release-plugin-prepare.
+   Этот файл содержит настройки для сборки, тестирования и деплоя в Nexus.
+
+Обратите внимание:
+
+- Для корректной работы ознакомьтесь с используемыми переменными окружения в пункте 3.
+- Проверьте, чтобы все необходимые секреты и токены для авторизации были настроены в CI/CD.
+
+2. Обновление файла pom.xml
+
+   В файле pom.xml(находящийся в корне проекта) необходимо указать URL вашего Nexus в секции <distributionManagement> следующим образом:
+
+```xml
+<distributionManagement>
+<repository>
+<id>nexus</id>
+<name>Release repository</name>
+<url>ВАШ URL (пример: https://nexus.essocode.ru/repository/mvn-ocode/)</url>
+</repository>
+</distributionManagement>
+```
+- Замените ВАШ URL на адрес вашего Nexus или аналогичного репозитория.
+
+3. Таблица переменных окружения
+
+### Таблица переменных окружения
+
+| Переменная          | Описание                                   | В pom.xml     | Пример                             |
+|---------------------|-------------------------------------------|-------------------------------|-----------------------------------|
+| `GIT_USERNAME`      | Имя пользователя для Git                  | `git.username`                | `my_git_user`                     |
+| `PAT_TOKEN`         | Личный токен доступа Git                     | `git.token`                   | `ghp_ABC123XYZ456TOKEN`           |
+| `NEXUS_USERNAME`    | Имя пользователя для Nexus                | -                             | `nexus_user`                      |
+| `NEXUS_PASSWORD`    | Пароль для Nexus                          | -                             | `securePassword123`               |
+| `GIT_EMAIL`         | Email для Git                             | -                             | `user@example.com`                |
+| `SCM_URL`           | URL репозитория исходного кода            | `git.scm.url`                 | `https://git.essocode.ru/o-code/common.lib.git`    |
+| `SCM_CONNECTION`    | URL для подключения к SCM                 | `git.scm.connection`          | `scm:git:https://git.essocode.ru/o-code/common.lib.git`|
+| `SCM_DEV_CONNECTION`| URL для подключения разработчиков к SCM   | `git.scm.developerConnection` | `scm:git:https://git.essocode.ru/o-code/common.lib.git`|
+
+
+4. Автоматический деплой
+
+   После выполнения изменений и настройки пайплайна ваш проект будет автоматически собираться и деплоиться в указанный репозиторий Nexus с помощью плагина Maven Release.
+
 ![img.png](img.png)
 
 **6. Безопасность:**
@@ -99,6 +143,5 @@ distributionManagement и scm используются переменные, к�
 
 
 # 📦 Требования
-- Java: 11
+- Java: 11 Bellsoft Liberica Full
 - Spring Boot: 2.7
-- 
