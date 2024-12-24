@@ -30,7 +30,7 @@ steps:
       - git config --global user.email "$GIT_EMAIL"
       - git config --global user.name "$GIT_USERNAME"
       - printenv
-      - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME Dgit.scm.url=$SCM_URL -Dgit.scm.connection=$SCM_CONNECTION -Dgit.scm.developerConnection=$SCM_DEV_CONNECTION -DautoVersionSubmodules=true -X
+      - mvn release:prepare --batch-mode -Dgit.token=$PAT_TOKEN -Dgit.username=$GIT_USERNAME -Dgit.scm.url=$SCM_URL -Dgit.scm.connection=$SCM_CONNECTION -Dgit.scm.developerConnection=$SCM_DEV_CONNECTION -DautoVersionSubmodules=true -X
       - |
         cat > $GITHUB_WORKSPACE/settings.xml <<EOL
         <settings>
