@@ -37,7 +37,11 @@ public class AuditLogEvent {
     @JsonProperty("resultData")
     String resultData;
 
-    @Schema(example = "15", description = "Время, затраченное на операцию")
+    @Schema(example = "10", description = "Размер работы ивента в миллисекундах")
     @JsonProperty("timeElapsed")
     long timeElapsed;
+
+    @Schema(example = "10", description = "Размер обрабатываемых данных в байтах")
+    @JsonProperty("payloadSize")
+    long payloadSize;
 }
