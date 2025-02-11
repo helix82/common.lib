@@ -12,15 +12,16 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StopWatch;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Aspect
 @RequiredArgsConstructor
 @Slf4j
-// Временное решение, журналирование должно быть реализовано в отдельном сервисе, а соединенять с ним нужно по кафке
 public class AuditLogRestSupport {
 
     @Value("${audit.default-user:Администратор}")
@@ -41,19 +42,20 @@ public class AuditLogRestSupport {
 
         log.info("Logging: {}", annotation);
 
-        // TODO: переработать парсинг/фильтр объектов
-//        String inputData = "{ \"status\": \"Done\" }";
+        // TODO: переработать парсинг/фильтр объектов, унифицировать (Данияр)
         String inputData = trySerialize(proceedingJoinPoint.getArgs());
         String outputData = "{ \"status\": \"Done\" }";
 
         boolean wasSuccessful = false;
         AuditSeverityEnum severity = AuditSeverityEnum.ERROR;
         long timeElapsed = -1L;
+        long dataSize = -1L;
 
         try {
             var struct = proceedMethodElapsingTime(proceedingJoinPoint);
             Object resultCache = struct.getObject();
             timeElapsed = struct.getTimeElapsedMillis();
+            dataSize = calculateDataPayloadSize(proceedingJoinPoint);
             wasSuccessful = true;
             severity = AuditSeverityEnum.INFO;
             outputData = trySerialize(resultCache);
@@ -135,6 +137,7 @@ public class AuditLogRestSupport {
                             .inputData(inputData)
                             .resultData(outputData)
                             .timeElapsed(timeElapsed)
+                            .payloadSize(dataSize)
                             .build()
             );
         }
@@ -173,6 +176,40 @@ public class AuditLogRestSupport {
             this.timeElapsedMillis = timeElapsed;
             this.timeString = String.format("{ \"Время исполнения\": \"%d мс.\" }", timeElapsedMillis);
         }
+    }
+
+    private Long calculateDataPayloadSize(ProceedingJoinPoint proceedingJoinPoint) {
+
+        var measurableArgs = tryFindingPayloadMeasurableArgument(proceedingJoinPoint);
+
+        if (measurableArgs.isEmpty()) {
+
+            long sum = 0L;
+
+            for (Object arg : proceedingJoinPoint.getArgs()) {
+
+                if (arg instanceof MultipartFile)
+                    sum += ((MultipartFile) arg).getSize();
+                else if (arg instanceof byte[])
+                    sum += ((byte[]) arg).length;
+            }
+
+            return sum;
+        }
+        else
+            return measurableArgs.get();
+    }
+
+    private Optional<Long> tryFindingPayloadMeasurableArgument(ProceedingJoinPoint proceedingJoinPoint) {
+
+        for (Object arg : proceedingJoinPoint.getArgs()) {
+            if (arg instanceof AuditPayloadMeasurable)
+                return Optional.of(
+                        ((AuditPayloadMeasurable) arg).getPayloadSize()
+                );
+        }
+
+        return Optional.empty();
     }
 
     // FIXME: refactoooor и фильтрация полей (Данияр)
