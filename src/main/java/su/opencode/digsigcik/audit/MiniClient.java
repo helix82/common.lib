@@ -25,6 +25,7 @@ import java.util.Optional;
 
 @Slf4j
 public class MiniClient {
+
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
     public static final String RESPONSE_MIME_TYPE = "responseMimeType";
     public static final String USER_MIME_TYPE = "userMimeType";
@@ -32,13 +33,18 @@ public class MiniClient {
     public static final String UPLOAD = "upload";
     public static final String UPLOAD_FILE = "upfile";
     public static final String TEXT_XML = "text/xml";
-    protected static final int CONNECT_TIMEOUT = 5000;
-    protected static final int READ_TIMEOUT = 5000;
+
     private RestTemplate restTemplate;
     private HttpHeaders sessionHeaders = new HttpHeaders();
 
     public MiniClient() {
+        this(0);
+    }
+
+    public MiniClient(int timeoutMillis) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(timeoutMillis);
+        requestFactory.setReadTimeout(timeoutMillis);
         this.restTemplate = new RestTemplate(requestFactory);
         configureRestTemplate();
     }
