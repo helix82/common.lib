@@ -19,7 +19,7 @@ import java.util.Map;
 public class AuditLogRestService {
 
     private final ObjectMapper mapper = new ObjectMapper();
-    private final MiniClient client = new MiniClient();
+    private final MiniClient client = new MiniClient(3000);
 
     @Value("${audit.url}")
     private URI auditEndpointUrl;
