@@ -92,7 +92,14 @@ public enum AuditLogEventEnum {
     M4D_CREDENTIAL_UPDATE(AuditLogTopicEnum.M4D_CREDENTIALS, "Обновление полномочия"),
     M4D_CREDENTIAL_DELETE(AuditLogTopicEnum.M4D_CREDENTIALS, "Удаление полномочия из справочника"),
 
-    CONTAINER_VERIFY(AuditLogTopicEnum.VERIFY, "Проверка контейнера");
+    CONTAINER_VERIFY(AuditLogTopicEnum.VERIFY, "Проверка контейнера"),
+
+    // =================================================================================================================
+    // Experimental (согласовать с Аналитикой)
+    // =================================================================================================================
+
+    CLOUD_PIN_CODE_UPDATE(AuditLogTopicEnum.USER_CERT, "Смена пин-кода в облачном крипто-провайдере");
+
 
     private AuditLogTopicEnum topic;        // Общая тема журналируемого события
     private String description;             // Опциональное описание (пока нигде не используется)
