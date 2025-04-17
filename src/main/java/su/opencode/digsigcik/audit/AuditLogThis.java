@@ -22,4 +22,6 @@ public @interface AuditLogThis {
     boolean markExecutionTime() default false;
 
     Class<?> deleteByIdRepository() default Class.class;
+
+    Class<?> signatureByIdRepository() default Class.class;
 }
