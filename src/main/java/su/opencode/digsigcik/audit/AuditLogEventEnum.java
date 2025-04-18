@@ -83,12 +83,10 @@ public enum AuditLogEventEnum {
     M4D_UPDATE(AuditLogTopicEnum.M4D, "Обновление МЧД"),
     M4D_DELETE(AuditLogTopicEnum.M4D, "Удаление МЧД"),
     M4D_VERIFY(AuditLogTopicEnum.M4D, "Верификация контейнера МЧД"),
-    M4D_SIGNATURE(AuditLogTopicEnum.M4D, "Подпись МЧД"),
 
     M4D_RECALL_CREATE(AuditLogTopicEnum.M4D, "Добавление заявления на отзыв МЧД"),
     M4D_RECALL_UPDATE(AuditLogTopicEnum.M4D, "Обновление заявления на отзыв МЧД"),
     M4D_RECALL_DELETE(AuditLogTopicEnum.M4D, "Удаление заявления на отзыв МЧД"),
-    M4D_RECALL_SIGNATURE(AuditLogTopicEnum.M4D, "Подпись заявления на отзыв МЧД"),
 
     M4D_CREDENTIAL_CREATE(AuditLogTopicEnum.M4D_CREDENTIALS, "Создание полномочия"),
     M4D_CREDENTIAL_UPDATE(AuditLogTopicEnum.M4D_CREDENTIALS, "Обновление полномочия"),
