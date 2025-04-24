@@ -83,10 +83,17 @@ public enum AuditLogEventEnum {
     M4D_UPDATE(AuditLogTopicEnum.M4D, "Обновление МЧД"),
     M4D_DELETE(AuditLogTopicEnum.M4D, "Удаление МЧД"),
     M4D_VERIFY(AuditLogTopicEnum.M4D, "Верификация контейнера МЧД"),
+    M4D_SIGNATURE(AuditLogTopicEnum.M4D, "Загрузка подписи МЧД"),
+    M4D_REQUEST_SEARCH_FIND_RR_CREATE(AuditLogTopicEnum.M4D, "Создание запроса на поиск МЧД в РР МЧД"),
+    M4D_REQUEST_SEARCH_FIND_RR_DELETE(AuditLogTopicEnum.M4D, "Удаление запроса на поиск МЧД в РР МЧД"),
+    M4D_REQUEST_SEARCH_FIND_RR_UPDATE_STATUS(AuditLogTopicEnum.M4D, "Обновление статуса МЧД в запросе РР МЧД"),
+    M4D_CHECK_IN_PEP(AuditLogTopicEnum.M4D, "Поиск МЧД в ПЭП"),
+    M4D_CHECK_IN_REQUEST_SEARCH(AuditLogTopicEnum.M4D, "Поиск ранее сформированного запроса в РР МЧД на проверку статуса МЧД"),
 
     M4D_RECALL_CREATE(AuditLogTopicEnum.M4D, "Добавление заявления на отзыв МЧД"),
     M4D_RECALL_UPDATE(AuditLogTopicEnum.M4D, "Обновление заявления на отзыв МЧД"),
     M4D_RECALL_DELETE(AuditLogTopicEnum.M4D, "Удаление заявления на отзыв МЧД"),
+    M4D_RECALL_SIGNATURE(AuditLogTopicEnum.M4D, "Загрузка подписи заявления на отзыв МЧД"),
 
     M4D_CREDENTIAL_CREATE(AuditLogTopicEnum.M4D_CREDENTIALS, "Создание полномочия"),
     M4D_CREDENTIAL_UPDATE(AuditLogTopicEnum.M4D_CREDENTIALS, "Обновление полномочия"),
