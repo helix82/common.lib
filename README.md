@@ -145,3 +145,4 @@ distributionManagement и scm используются переменные, к�
 # 📦 Требования
 - Java: 11 Bellsoft Liberica Full
 - Spring Boot: 2.7
+- 
