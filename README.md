@@ -7,6 +7,9 @@
 Она предназначена для унификации подходов и ускорения разработки.
 
 🔧 **Основной функционал**
+
+- Обёртка над Specification (Jakarta Criteria API) для комбинирования пэджинации, фильтрации, сортировки.
+
 1. **Общие перечисления**
 
 Предоставляет набор стандартных enum для различных бизнес-логик.
@@ -39,7 +42,7 @@
 <dependency>
 <groupId>su.opencode.digsigcik</groupId>
 <artifactId>common</artifactId>
-<version>1.0.13</version>
+<version>1.0.32</version>
 </dependency>
 ```
 
@@ -145,4 +148,3 @@ distributionManagement и scm используются переменные, к�
 # 📦 Требования
 - Java: 11 Bellsoft Liberica Full
 - Spring Boot: 2.7
-- 
