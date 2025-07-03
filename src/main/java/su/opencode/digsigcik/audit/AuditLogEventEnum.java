@@ -101,6 +101,12 @@ public enum AuditLogEventEnum {
 
     CONTAINER_VERIFY(AuditLogTopicEnum.VERIFY, "Проверка контейнера"),
 
+    // Ивенты скриптов на КриптоПро
+    INSTALL_ROOT_CA(AuditLogTopicEnum.CRYPTO_PRO_SCRIPTS, "Установка корневых сертификатов из ПЭП в КриптоПро"),
+    INSTALL_CA(AuditLogTopicEnum.CRYPTO_PRO_SCRIPTS, "Установка промежуточных сертификатов из ПЭП в КриптоПро"),
+    INSTALL_TSL(AuditLogTopicEnum.CRYPTO_PRO_SCRIPTS, "Установка tsl.xml из ПЭП в КриптоПро"),
+    INSTALL_CRL(AuditLogTopicEnum.CRYPTO_PRO_SCRIPTS, "Установка списка СОС из ПЭП в КриптоПро"),
+
     // =================================================================================================================
     // Experimental (согласовать с Аналитикой)
     // =================================================================================================================

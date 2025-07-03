@@ -28,7 +28,9 @@ public enum AuditLogTopicEnum {
     M4D_CREDENTIALS("Справочник полномочий"),
     SIMPLE_SIGN("Простая подпись ПИН-кодом"),
     GENERAL_SIGN("Подпись с использованием СКП ЭП"),
-    VERIFY("Проверка контейнера");
+    VERIFY("Проверка контейнера"),
+
+    CRYPTO_PRO_SCRIPTS("Скрипты КриптоПро");
 
 
     private final String description;
