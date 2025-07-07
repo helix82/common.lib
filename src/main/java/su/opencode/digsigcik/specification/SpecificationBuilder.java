@@ -51,18 +51,23 @@ public class SpecificationBuilder<T> {
 
     /**
      * критерии, описанные в произвольной форме
-     * TODO: составной оператор (Данияр)
      */
     public Specification<T> customFilter(List<Filter> filters) throws IllegalArgumentException {
 
         return (root, query, builder) -> {
 
+            Predicate predicateJengaTower = builder.conjunction();
+
             for (Filter filter : filters) {
                 log.trace("Specs type of {} is {}", filter.getFieldName(), root.get(filter.getFieldName()).getJavaType().getSimpleName());
-                return addon(builder, root.get(filter.getFieldName()), filter);
+
+                // TODO: тестирование, удалить (Данияр) 07-07-2025
+//                return addon(builder, root.get(filter.getFieldName()), filter);
+
+                predicateJengaTower = builder.and(predicateJengaTower, addon(builder, root.get(filter.getFieldName()), filter));
             }
 
-            return null;
+            return predicateJengaTower;
         };
     }
 
