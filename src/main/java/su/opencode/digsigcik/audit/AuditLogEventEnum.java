@@ -98,6 +98,7 @@ public enum AuditLogEventEnum {
     M4D_CREDENTIAL_CREATE(AuditLogTopicEnum.M4D_CREDENTIALS, "Создание полномочия"),
     M4D_CREDENTIAL_UPDATE(AuditLogTopicEnum.M4D_CREDENTIALS, "Обновление полномочия"),
     M4D_CREDENTIAL_DELETE(AuditLogTopicEnum.M4D_CREDENTIALS, "Удаление полномочия из справочника"),
+    M4D_CREDENTIAL_UPLOAD(AuditLogTopicEnum.M4D_CREDENTIALS, "Загрузка справочника полномочий"),
 
     CONTAINER_VERIFY(AuditLogTopicEnum.VERIFY, "Проверка контейнера"),
 
