@@ -1,6 +1,7 @@
 package su.opencode.digsigcik.specification;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -43,19 +44,20 @@ class SpecificationRequestTest {
         // TODO: проверка разных операторов (Данияр)
         // TODO: проверка самых разных комбинаций (Данияр)
         // TODO: PaginationMapperUtil, конвертирующий запрос в Specification (Данияр)
+        // TODO: включить принудительное прохождение тестов
 
         @Autowired
         private TestRepository repository;
 
         private SpecificationService service;
 
-        @Deprecated
-        @Test
-        public void test() {
-                Assertions.assertTrue(true);
-                repository.save(TestModelFactory.of("login", 2L));
-                Assertions.assertTrue(repository.findAll().iterator().hasNext());
-        }
+//        @Deprecated
+//        @Test
+//        public void test() {
+//                Assertions.assertTrue(true);
+//                repository.save(TestModelFactory.of("login", 2L));
+//                Assertions.assertTrue(repository.findAll().iterator().hasNext());
+//        }
 
         @Test
         public void testNullSpecification_shouldBeOk() {
@@ -163,6 +165,7 @@ class SpecificationRequestTest {
                 thenResponseContainsOnly(10, "Daniyar");
         }
 
+        // TODO
         // Search
 
         @Test
@@ -189,13 +192,40 @@ class SpecificationRequestTest {
                 });
         }
 
+        @Disabled("см. TestRepository")
+        @Test
+        public void testJpqlCompatibility_OverrideFindAll_shouldFindAll() {
+                given();
+//                Assertions.assertEquals(145, repository.findAll().size());
+        }
+
+        @Test
+        public void testJpqlCompatibility_EqualsField_shouldFilter() {
+//                @Query("SELECT tm from TestModel tm where tm.success=false")
+                givenWith10_variations_withStatusFalse();
+                Assertions.assertEquals(10, repository.find_success_is_false().size());
+//                List<TestModel> findAllBySuccessFalse();
+                Assertions.assertEquals(10, repository.findAllBySuccessFalse().size());
+        }
+
+
+        @Test
+        public void testJpqlCompatibility_ComplexJpqlQuery_shouldFilter() {
+                givenWith10_WithLogin("petrov");
+                //        @Query("SELECT count(tm.id) from TestModel tm where tm.login=?1 and tm.success=false AND tm.inputData IS NULL")
+                Assertions.assertEquals(10, repository.count_by_login("petrov"));
+        }
+
         // =================================================================================================================
         // =================================================================================================================
         // =================================================================================================================
 
 
+        private int REPO_SIZE = 0;
 
         void given() {
+                REPO_SIZE = 145;
+
                 repository.saveAll(
                         TestModelFactory.ofRange(Stream.iterate(0L, f -> f <= 145, f -> f+1))
                 );
@@ -204,15 +234,28 @@ class SpecificationRequestTest {
         }
 
         void givenWith10_WithLogin(String login) {
+                REPO_SIZE = 145;
+
                 repository.saveAll(
                         TestModelFactory.ofRange("login1", Stream.iterate(0L, f -> f <= 135, f -> f+1))
                 );
                 repository.saveAll(
-                        TestModelFactory.ofRange(login, Stream.iterate(136L, f -> f <= 145, f -> f+1))
+                        TestModelFactory.ofRange(login, Stream.iterate(136L, f -> f <= 145, f -> f+1), false)
                 );
 
                 service = new SpecificationServiceImpl();
         }
+
+        void givenWith10_variations_withStatusFalse() {
+                given();
+
+                for (int i = REPO_SIZE / 2 ; i < REPO_SIZE / 2 + 10; i++)
+                        repository.findById((long) i).orElseThrow().setSuccess(false);
+
+                service = new SpecificationServiceImpl();
+        }
+
+        // TODO: добавить тестирование мульти-фильтра (составного фильтра)
 
         SpecificationResponse<TestModel> response;
 
