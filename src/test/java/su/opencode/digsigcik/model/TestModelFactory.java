@@ -23,15 +23,29 @@ public class TestModelFactory {
         return list;
     }
 
+    public static List<TestModel> ofRange(String login, Stream<Long> ids, boolean success) {
+        List<TestModel> list = new ArrayList<>();
+
+        ids.forEach(id -> {
+            list.add(of(login, id, success));
+        });
+
+        return list;
+    }
+
     public static TestModel of(String login, Long id) {
+        return of(login, id, Boolean.TRUE);
+    }
+
+    public static TestModel of(String login, Long id, boolean success) {
         return new TestModel(
                 id,
                 LocalDateTime.now(),
                 login,
                 AuditLogEventEnum.USER_CERTS_ORDER_ADDED,
                 AuditSeverityEnum.INFO,
-                Boolean.TRUE,
-                "", "", 0l, 0l
+                success,
+                null, "", 0l, 0l
         );
     }
 }

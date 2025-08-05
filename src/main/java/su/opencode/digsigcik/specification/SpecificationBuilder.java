@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import su.opencode.digsigcik.specification.annotation.EnableDeepSearch;
 import su.opencode.digsigcik.specification.model.Filter;
 import su.opencode.digsigcik.specification.model.Order;
 import su.opencode.digsigcik.specification.model.Pagination;
@@ -15,6 +16,7 @@ import su.opencode.digsigcik.specification.model.Search;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -23,6 +25,9 @@ import java.util.*;
 
 @Slf4j
 public class SpecificationBuilder<T> {
+
+    private static final List<Class<?>> NUMBER_CLASSES = List.of(Number.class, Long.class, Integer.class, Double.class, Float.class);
+    private static final List<Class<?>> DATE_CLASSES = List.of(Temporal.class, LocalDateTime.class, ZonedDateTime.class);
 
     private final Class<?> clazz;
     private final Map<String, FilterDataType> types;
@@ -34,24 +39,29 @@ public class SpecificationBuilder<T> {
 
     public static <T> SpecificationBuilder<T> of(Class<T> clazz) {
 
-        var classDescription = new HashMap<String, FilterDataType>();
-
-        for (Field f : clazz.getDeclaredFields()) {
-            if (f.getType().equals(Number.class) || f.getType().equals(Long.class) || f.getType().equals(Integer.class) || f.getType().equals(Double.class) || f.getType().equals(Float.class))
-                classDescription.put(f.getName(), FilterDataType.NUMBER);
-            else if (f.getType().equals(Temporal.class) || f.getType().equals(LocalDateTime.class) || f.getType().equals(ZonedDateTime.class))
-                classDescription.put(f.getName(), FilterDataType.DATETIME_ISO);
-            else
-                classDescription.put(f.getName(), FilterDataType.STRING);
-        }
+        HashMap<String, FilterDataType> classDescription = new HashMap<String, FilterDataType>();
+        enrichRecursively("", classDescription, clazz);
 
         log.debug("Class {} was parsed for filter types: {}", clazz.getSimpleName(), classDescription);
         return new SpecificationBuilder<T>(clazz, classDescription);
     }
 
-    /**
-     * критерии, описанные в произвольной форме
-     */
+    static <T> void enrichRecursively(String parentPath, Map<String, FilterDataType> classDescription, Class<T> clazz) {
+        for (Field field : clazz.getDeclaredFields()) {
+
+            String fieldPath = parentPath.isBlank() ? field.getName() : String.format("%s.%s", parentPath, field.getName());
+
+            if (field.isAnnotationPresent(EnableDeepSearch.class) && !NUMBER_CLASSES.contains(field.getType()) && !DATE_CLASSES.contains(field.getType()))
+                enrichRecursively(fieldPath, classDescription, field.getClass());
+            else if (NUMBER_CLASSES.contains(field.getType()))
+                classDescription.put(fieldPath, FilterDataType.NUMBER);
+            else if (DATE_CLASSES.contains(field.getType()))
+                classDescription.put(fieldPath, FilterDataType.DATETIME_ISO);
+            else
+                classDescription.put(fieldPath, FilterDataType.STRING);
+        }
+    }
+
     public Specification<T> customFilter(List<Filter> filters) throws IllegalArgumentException {
 
         return (root, query, builder) -> {
@@ -74,7 +84,7 @@ public class SpecificationBuilder<T> {
     // TODO: refactoring (Данияр)
     private Predicate addon(CriteriaBuilder builder, Path path, Filter filter) throws IllegalArgumentException {
 
-        switch ( getTypeForFieldName(filter.getFieldName()) ) {
+        switch (getTypeForFieldName(filter.getFieldName())) {
             case NUMBER:
                 return addonNumber(builder, path, filter);
             case STRING:
@@ -95,25 +105,24 @@ public class SpecificationBuilder<T> {
         List<Double> numbers = (List<Double>) filter.tryParseValues(FilterDataType.NUMBER);
         log.debug("Managing number filter: {}", filter);
 
-        if ( filter.getOperator().equals(FilterOperator.GREATER) )
+        if (filter.getOperator().equals(FilterOperator.GREATER))
             return builder.greaterThan(path, numbers.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.GREATER_OR_EQUAL) )
+        else if (filter.getOperator().equals(FilterOperator.GREATER_OR_EQUAL))
             return builder.greaterThanOrEqualTo(path, numbers.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.LESS) )
+        else if (filter.getOperator().equals(FilterOperator.LESS))
             return builder.lessThan(path, numbers.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.LESS_OR_EQUAL) )
+        else if (filter.getOperator().equals(FilterOperator.LESS_OR_EQUAL))
             return builder.lessThanOrEqualTo(path, numbers.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.EQUAL) )
+        else if (filter.getOperator().equals(FilterOperator.EQUAL))
             return builder.equal(path, numbers.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.BETWEEN) ) {
+        else if (filter.getOperator().equals(FilterOperator.BETWEEN)) {
             if (numbers.get(0) == null)
                 return builder.lessThanOrEqualTo(path, numbers.get(1));
             else if (numbers.get(1) == null)
                 return builder.greaterThanOrEqualTo(path, numbers.get(0));
             else
                 return builder.between(path, numbers.get(0), numbers.get(1));
-        }
-        else if ( filter.getOperator().equals(FilterOperator.IN) )
+        } else if (filter.getOperator().equals(FilterOperator.IN))
             return path.in(numbers);
 
         throw new IllegalArgumentException();
@@ -124,19 +133,19 @@ public class SpecificationBuilder<T> {
         List<String> strings = (List<String>) filter.tryParseValues(FilterDataType.STRING);
         log.debug("Managing string filter: {}", filter);
 
-        if ( filter.getOperator().equals(FilterOperator.GREATER) )
+        if (filter.getOperator().equals(FilterOperator.GREATER))
             return builder.greaterThan(path.as(String.class), strings.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.GREATER_OR_EQUAL) )
+        else if (filter.getOperator().equals(FilterOperator.GREATER_OR_EQUAL))
             return builder.greaterThanOrEqualTo(path.as(String.class), strings.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.LESS) )
+        else if (filter.getOperator().equals(FilterOperator.LESS))
             return builder.lessThan(path.as(String.class), strings.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.LESS_OR_EQUAL) )
+        else if (filter.getOperator().equals(FilterOperator.LESS_OR_EQUAL))
             return builder.lessThanOrEqualTo(path.as(String.class), strings.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.EQUAL) )
+        else if (filter.getOperator().equals(FilterOperator.EQUAL))
             return builder.equal(path.as(String.class), strings.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.LIKE) )
+        else if (filter.getOperator().equals(FilterOperator.LIKE))
             return simpleLikePredicate(path, builder, strings.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.IN) )
+        else if (filter.getOperator().equals(FilterOperator.IN))
             return path.as(String.class).in(strings);
 
         throw new IllegalArgumentException();
@@ -147,27 +156,26 @@ public class SpecificationBuilder<T> {
         List<LocalDateTime> dates = (List<LocalDateTime>) filter.tryParseValues(FilterDataType.DATETIME_ISO);
         log.debug("Managing date filter: {}", filter);
 
-        if ( filter.getOperator().equals(FilterOperator.GREATER) )
+        if (filter.getOperator().equals(FilterOperator.GREATER))
             return builder.greaterThan(path, dates.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.GREATER_OR_EQUAL) )
+        else if (filter.getOperator().equals(FilterOperator.GREATER_OR_EQUAL))
             return builder.greaterThanOrEqualTo(path, dates.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.LESS) )
+        else if (filter.getOperator().equals(FilterOperator.LESS))
             return builder.lessThan(path, dates.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.LESS_OR_EQUAL) )
+        else if (filter.getOperator().equals(FilterOperator.LESS_OR_EQUAL))
             return builder.lessThanOrEqualTo(path, dates.get(0));
-        else if ( filter.getOperator().equals(FilterOperator.EQUAL) )
+        else if (filter.getOperator().equals(FilterOperator.EQUAL))
             return builder.equal(path, dates.get(0));
             // TODO: consider `builder.between(root.get("dateStart"),date1, date2)`;
             //  но с ней непонятно пока, как без ошибок парсить пустые поля (Данияр)
-        else if ( filter.getOperator().equals(FilterOperator.BETWEEN) ) {
+        else if (filter.getOperator().equals(FilterOperator.BETWEEN)) {
             if (dates.get(0) == null)
                 return builder.lessThanOrEqualTo(path, dates.get(1));
             else if (dates.get(1) == null)
                 return builder.greaterThanOrEqualTo(path, dates.get(0));
             else
                 return builder.between(path, dates.get(0), dates.get(1));
-        }
-        else if ( filter.getOperator().equals(FilterOperator.IN) )
+        } else if (filter.getOperator().equals(FilterOperator.IN))
             return path.in(dates);
 
         throw new IllegalArgumentException();
@@ -187,7 +195,7 @@ public class SpecificationBuilder<T> {
 
     public PageRequest pagableOf(@NonNull Pagination pagination, @NonNull List<Order> orders) {
         return justPagination(pagination)
-                .withSort( justSort(orders) );
+                .withSort(justSort(orders));
     }
 
     public static Sort sortOf(Order order) {
@@ -217,10 +225,10 @@ public class SpecificationBuilder<T> {
         var o = orderOf(pageAcquired.getSort());
 
         return SpecificationResponse.<T>builder()
-                .data( pageAcquired.getContent() )
-                .pagination( p )
-                .sortBy( List.of(o) )
-                .filters( filtersApplied )
+                .data(pageAcquired.getContent())
+                .pagination(p)
+                .sortBy(List.of(o))
+                .filters(filtersApplied)
                 .build();
     }
 
@@ -228,17 +236,39 @@ public class SpecificationBuilder<T> {
     public Specification<T> customSearch(Search search) {
         return (root, query, builder) -> {
 
-            Iterator<String> iterator = search.getFields().iterator();
-            Predicate predicate;
+            String template = "%" + search.getTemplate() + "%";
+            Iterator<String> fieldsIterator = search.getFields().iterator();
 
-            // TODO: test null (Данияр)
-            for (predicate = simpleLikePredicate(root.get(iterator.next()), builder, search.getTemplate());
-                 iterator.hasNext();
-                 predicate = builder.or(predicate, simpleLikePredicate(root.get(iterator.next()), builder, search.getTemplate()))
-            ) ;
+            // TODO: удалить (Данияр) 05-08-2025
+            log.debug("Search Template: {}", template);
 
-            return predicate;
+            Predicate predicateJengaTower = builder.disjunction();
+
+            while (fieldsIterator.hasNext()) {
+
+                // TODO: пересесть на addon, общую обёртку (Данияр)
+                predicateJengaTower = builder.or(
+                        predicateJengaTower,
+                        simpleLikePredicate(nestedPathOf(fieldsIterator.next(), root), builder, template)
+//                        builder.like(builder.lower(nestedPathOf(fieldsIterator.next(), root).as(String.class)), template)
+                );
+            }
+
+            return predicateJengaTower;
         };
+    }
+
+    public static <T> Path<Object> nestedPathOf(String key, Root<T> root) {
+
+        String[] parts = key.split("\\.");
+        Path<Object> nestedPath = root.get(parts[0]);
+
+        for (int i = 1; i < parts.length; i++) {
+            nestedPath = nestedPath.get(parts[i]);
+        }
+
+        log.debug("SingularAttribute path: {}", (Object) parts);
+        return nestedPath;
     }
 
     private static <T> Predicate simpleLikePredicate(Path<T> attributePath, CriteriaBuilder builder, String likePattern) {
