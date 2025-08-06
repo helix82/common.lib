@@ -34,8 +34,8 @@ public class MiniClient {
     public static final String UPLOAD_FILE = "upfile";
     public static final String TEXT_XML = "text/xml";
 
-    private RestTemplate restTemplate;
-    private HttpHeaders sessionHeaders = new HttpHeaders();
+    private final RestTemplate restTemplate;
+    private final HttpHeaders sessionHeaders = new HttpHeaders();
 
     public MiniClient() {
         this(0);
@@ -78,7 +78,7 @@ public class MiniClient {
     public HttpStatus request(@NonNull final RestTemplateClientRequest restTemplateClientRequest) throws IOException, HttpClientErrorException {
         HttpEntity<?> requestEntity = populateRequest(restTemplateClientRequest);
         ResponseEntity<String> response = restTemplate.exchange(restTemplateClientRequest.getRequestUri(), restTemplateClientRequest.getHttpMethod(), requestEntity, String.class);
-        return response.getStatusCode();
+        return (HttpStatus) response.getStatusCode();
     }
 
     private HttpEntity<?> populateRequest(@NonNull RestTemplateClientRequest restTemplateClientRequest) throws IOException {
