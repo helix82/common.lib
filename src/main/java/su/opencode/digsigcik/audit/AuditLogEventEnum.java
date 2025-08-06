@@ -108,6 +108,13 @@ public enum AuditLogEventEnum {
     INSTALL_TSL(AuditLogTopicEnum.CRYPTO_PRO_SCRIPTS, "Установка tsl.xml из ПЭП в КриптоПро"),
     INSTALL_CRL(AuditLogTopicEnum.CRYPTO_PRO_SCRIPTS, "Установка списка СОС из ПЭП в КриптоПро"),
 
+    //HealthCheck
+    HEALTH_M4D(AuditLogTopicEnum.M4D, "Статус здоровья БД сервиса M4D"),
+    HEALTH_SYNAPI(AuditLogTopicEnum.GENERAL_SIGN, "Статус здоровья БД сервиса Synapi"),
+    HEALTH_REFBOOK(AuditLogTopicEnum.TEMPLATE, "Статус здоровья БД сервиса Ref-book"),
+    HEALTH_PVV_ADAPTER(AuditLogTopicEnum.NA, "Статус здоровья БД сервиса Pvv-adapter"),
+    HEALTH_TLS(AuditLogTopicEnum.TLS_CERTS_ORDER, "Статус здоровья БД сервиса TLS"),
+
     // =================================================================================================================
     // Experimental (согласовать с Аналитикой)
     // =================================================================================================================
@@ -115,6 +122,6 @@ public enum AuditLogEventEnum {
     CLOUD_PIN_CODE_UPDATE(AuditLogTopicEnum.USER_CERT, "Смена пин-кода в облачном крипто-провайдере");
 
 
-    private AuditLogTopicEnum topic;        // Общая тема журналируемого события
-    private String description;             // Опциональное описание (пока нигде не используется)
+    private final AuditLogTopicEnum topic;        // Общая тема журналируемого события
+    private final String description;             // Опциональное описание (пока нигде не используется)
 }
