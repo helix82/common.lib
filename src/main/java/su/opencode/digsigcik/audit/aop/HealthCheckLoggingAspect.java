@@ -31,8 +31,8 @@ public class HealthCheckLoggingAspect {
     public void logHealthStatus(Health health) {
         String healthDB = health.toString();
         Boolean status = null;
-        String outputData = "{}";
-        String inputData = "{}";
+        String outputData = "{\"status\": \"%s\"}";
+        String inputData = "{\"status\": \"%s\"}";
         long timeElapsed = -1L;
         long dataSize = -1L;
         AuditLogEventEnum event = AuditLogEventEnum.NA;
@@ -46,9 +46,9 @@ public class HealthCheckLoggingAspect {
             }
             if (status == null) {
                 status = false;
-                outputData = HEALTH_STATUS_UNKNOWN;
+                outputData = String.format(outputData, HEALTH_STATUS_UNKNOWN);
             } else {
-                outputData = healthDB;
+                outputData = String.format(outputData, healthDB);
             }
             switch (serviceName) {
                 case "M4D":
