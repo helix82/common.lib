@@ -4,7 +4,7 @@
 
     <groupId>su.opencode.digsigcik</groupId>
     <artifactId>common</artifactId>
-    <version>1.0.38</version>
+    <version>1.0.39-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -160,7 +160,7 @@
         <url>${git.scm.url}</url>
         <connection>${git.scm.connection}</connection>
         <developerConnection>${git.scm.developerConnection}</developerConnection>
-      <tag>common-1.0.38</tag>
+      <tag>HEAD</tag>
   </scm>
 
 
