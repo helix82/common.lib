@@ -32,7 +32,7 @@ public class HealthCheckLoggingAspect {
         String healthDB = health.toString();
         Boolean status = null;
         String outputData = "{\"status\": \"%s\"}";
-        String inputData = "{\"status\": \"%s\"}";
+        String inputData = "{\"status\": \"\"}";
         long timeElapsed = -1L;
         long dataSize = -1L;
         AuditLogEventEnum event = AuditLogEventEnum.NA;
