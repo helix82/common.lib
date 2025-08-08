@@ -50,6 +50,7 @@ public class AuditLogRestSupport {
         AuditSeverityEnum severity = AuditSeverityEnum.ERROR;
         long timeElapsed = -1L;
         long dataSize = -1L;
+        long fifteenSecondsInMillis = 15 * 1000;
 
         try {
             var struct = proceedMethodElapsingTime(proceedingJoinPoint);
@@ -57,7 +58,11 @@ public class AuditLogRestSupport {
             timeElapsed = struct.getTimeElapsedMillis();
             dataSize = calculateDataPayloadSize(proceedingJoinPoint);
             wasSuccessful = true;
-            severity = AuditSeverityEnum.INFO;
+            if (timeElapsed > fifteenSecondsInMillis) {
+                severity = AuditSeverityEnum.WARNING;
+            } else {
+                severity = AuditSeverityEnum.INFO;
+            }
             outputData = trySerialize(resultCache);
 
             try {
