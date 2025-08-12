@@ -38,7 +38,7 @@ public class HealthCheckLoggingAspect {
         AuditLogEventEnum event = AuditLogEventEnum.NA;
         AuditSeverityEnum severity = AuditSeverityEnum.ERROR;
         boolean wasSuccessful = false;
-        if (healthDB.contains("database=")) {
+        if (healthDB.contains("database=") || healthDB.contains("total=") || healthDB.equals("UP {}") || healthDB.equals("DOWN {}")) {
             if (healthDB.startsWith("UP")) {
                 status = true;
             } else if (healthDB.startsWith("DOWN")) {
@@ -52,19 +52,49 @@ public class HealthCheckLoggingAspect {
             }
             switch (serviceName) {
                 case "M4D":
-                    event = AuditLogEventEnum.HEALTH_M4D;
+                    if (healthDB.contains("database=")) {
+                        event = AuditLogEventEnum.HEALTH_M4D;
+                    } else if (healthDB.contains("total=")) {
+                        event = AuditLogEventEnum.HEALTH_M4D_DISC_SPACE;
+                    } else {
+                        event = AuditLogEventEnum.HEALTH_M4D_SERVICE;
+                    }
                     break;
                 case "SYNAPI":
-                    event = AuditLogEventEnum.HEALTH_SYNAPI;
+                    if (healthDB.contains("database=")) {
+                        event = AuditLogEventEnum.HEALTH_SYNAPI;
+                    } else if (healthDB.contains("total=")) {
+                        event = AuditLogEventEnum.HEALTH_SYNAPI_DISC_SPACE;
+                    } else {
+                        event = AuditLogEventEnum.HEALTH_SYNAPI_SERVICE;
+                    }
                     break;
                 case "REFBOOK":
-                    event = AuditLogEventEnum.HEALTH_REFBOOK;
+                    if (healthDB.contains("database=")) {
+                        event = AuditLogEventEnum.HEALTH_REFBOOK;
+                    } else if (healthDB.contains("total=")) {
+                        event = AuditLogEventEnum.HEALTH_REFBOOK_DISC_SPACE;
+                    } else {
+                        event = AuditLogEventEnum.HEALTH_REFBOOK_SERVICE;
+                    }
                     break;
                 case "TLS":
-                    event = AuditLogEventEnum.HEALTH_TLS;
+                    if (healthDB.contains("database=")) {
+                        event = AuditLogEventEnum.HEALTH_TLS;
+                    } else if (healthDB.contains("total=")) {
+                        event = AuditLogEventEnum.HEALTH_TLS_DISC_SPACE;
+                    } else {
+                        event = AuditLogEventEnum.HEALTH_TLS_SERVICE;
+                    }
                     break;
                 case "PVV_ADAPTER":
-                    event = AuditLogEventEnum.HEALTH_PVV_ADAPTER;
+                    if (healthDB.contains("database=")) {
+                        event = AuditLogEventEnum.HEALTH_PVV_ADAPTER;
+                    } else if (healthDB.contains("total=")) {
+                        event = AuditLogEventEnum.HEALTH_PVV_ADAPTER_DISC_SPACE;
+                    } else {
+                        event = AuditLogEventEnum.HEALTH_PVV_ADAPTER_SERVICE;
+                    }
                     break;
                 default:
             }
