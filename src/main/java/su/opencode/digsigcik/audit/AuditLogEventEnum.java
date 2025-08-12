@@ -115,6 +115,18 @@ public enum AuditLogEventEnum {
     HEALTH_PVV_ADAPTER(AuditLogTopicEnum.NA, "Статус здоровья БД сервиса Pvv-adapter"),
     HEALTH_TLS(AuditLogTopicEnum.TLS_CERTS_ORDER, "Статус здоровья БД сервиса TLS"),
 
+    HEALTH_M4D_SERVICE(AuditLogTopicEnum.M4D, "Статус сервиса M4D"),
+    HEALTH_SYNAPI_SERVICE(AuditLogTopicEnum.GENERAL_SIGN, "Статус сервиса Synapi"),
+    HEALTH_REFBOOK_SERVICE(AuditLogTopicEnum.TEMPLATE, "Статус сервиса Ref-book"),
+    HEALTH_PVV_ADAPTER_SERVICE(AuditLogTopicEnum.NA, "Статус сервиса Pvv-adapter"),
+    HEALTH_TLS_SERVICE(AuditLogTopicEnum.TLS_CERTS_ORDER, "Статус сервиса TLS"),
+
+    HEALTH_M4D_DISC_SPACE(AuditLogTopicEnum.M4D, "Статус вычислительных ресурсов сервиса M4D"),
+    HEALTH_SYNAPI_DISC_SPACE(AuditLogTopicEnum.GENERAL_SIGN, "Статус вычислительных ресурсов сервиса Synapi"),
+    HEALTH_REFBOOK_DISC_SPACE(AuditLogTopicEnum.TEMPLATE, "Статус вычислительных ресурсов сервиса Ref-book"),
+    HEALTH_PVV_ADAPTER_DISC_SPACE(AuditLogTopicEnum.NA, "Статус вычислительных ресурсов сервиса Pvv-adapter"),
+    HEALTH_TLS_DISC_SPACE(AuditLogTopicEnum.TLS_CERTS_ORDER, "Статус вычислительных ресурсов сервиса TLS"),
+
     // =================================================================================================================
     // Experimental (согласовать с Аналитикой)
     // =================================================================================================================
