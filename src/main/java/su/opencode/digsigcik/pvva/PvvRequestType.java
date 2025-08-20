@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@Deprecated
 @AllArgsConstructor
 public enum PvvRequestType {
 
