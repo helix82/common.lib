@@ -11,7 +11,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.lombok>1.18.34</version.lombok>
-        <jackson-version>2.18.1</jackson-version>
+        <jackson-version>2.17.0</jackson-version>
     </properties>
 
     <dependencies>
