@@ -29,7 +29,7 @@ public enum AuditLogTopicEnum {
     USER_PERMISSIONS("Полномочия пользователей"),
     SIMPLE_SIGN("Простая подпись ПИН-кодом"),
     GENERAL_SIGN("Подпись с использованием СКП ЭП"),
-    VERIFY("Проверка контейнера"),
+    CONTAINER("Работа с контейнером"),
 
     CRYPTO_PRO_SCRIPTS("Скрипты КриптоПро"),
 

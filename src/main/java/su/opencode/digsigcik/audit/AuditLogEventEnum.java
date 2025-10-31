@@ -95,7 +95,8 @@ public enum AuditLogEventEnum {
     USER_PERMISSIONS_UPDATE(AuditLogTopicEnum.USER_PERMISSIONS, "Обновление полномочий пользователя"),
     USER_PERMISSIONS_DELETE(AuditLogTopicEnum.USER_PERMISSIONS, "Удаление полномочий пользователя"),
 
-    CONTAINER_VERIFY(AuditLogTopicEnum.VERIFY, "Проверка контейнера"),
+    CONTAINER_VERIFY(AuditLogTopicEnum.CONTAINER, "Проверка контейнера"),
+    CONTAINER_UPDATE(AuditLogTopicEnum.CONTAINER, "Обновление контейнера"),
 
     // Ивенты скриптов на КриптоПро
     INSTALL_ROOT_CA(AuditLogTopicEnum.CRYPTO_PRO_SCRIPTS, "Установка корневых сертификатов из ПЭП в КриптоПро"),
