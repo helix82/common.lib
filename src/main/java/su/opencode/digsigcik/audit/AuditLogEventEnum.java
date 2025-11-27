@@ -74,7 +74,6 @@ public enum AuditLogEventEnum {
     M4D_CREATE(AuditLogTopicEnum.M4D, "Добавление МЧД"),
     M4D_UPDATE(AuditLogTopicEnum.M4D, "Обновление МЧД"),
     M4D_DELETE(AuditLogTopicEnum.M4D, "Удаление МЧД"),
-    M4D_VERIFY(AuditLogTopicEnum.M4D, "Проверка контейнера МЧД"),
     M4D_SIGNATURE(AuditLogTopicEnum.M4D, "Загрузка подписи МЧД"),
     M4D_REQUEST_SEARCH_FIND_RR_CREATE(AuditLogTopicEnum.M4D, "Добавление запроса на поиск МЧД в РР МЧД"),
     M4D_REQUEST_SEARCH_FIND_RR_DELETE(AuditLogTopicEnum.M4D, "Удаление запроса на поиск МЧД в РР МЧД"),

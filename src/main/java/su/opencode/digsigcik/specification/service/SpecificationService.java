@@ -14,4 +14,8 @@ public interface SpecificationService {
     <T> SpecificationResponse<T> getUsingSpecification(ISpecificationRepository<T> repository, SpecificationRequest request, Class<T> clazz) throws IllegalArgumentException;
 
     <T> Optional<Pageable> pageable(SpecificationRequest request, SpecificationBuilder<T> builder);
+
+    void onlyRelevant(final SpecificationRequest request);
+
+    void onlyLogin(final SpecificationRequest request, String login);
 }

@@ -4,18 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import su.opencode.digsigcik.specification.FilterOperator;
 import su.opencode.digsigcik.specification.SpecificationBuilder;
 import su.opencode.digsigcik.specification.SpecificationRequest;
 import su.opencode.digsigcik.specification.SpecificationResponse;
+import su.opencode.digsigcik.specification.model.Filter;
 import su.opencode.digsigcik.specification.repository.ISpecificationRepository;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 public class SpecificationServiceImpl implements SpecificationService {
@@ -92,5 +92,24 @@ public class SpecificationServiceImpl implements SpecificationService {
             return Optional.of( builder.justPagination(request.getPagination()) );
 
         return Optional.empty();
+    }
+
+    @Override
+    public void onlyRelevant(SpecificationRequest request) {
+
+        // TODO: request.getFilters() might be nullable | also test
+        if (Objects.isNull(request.getFilters()))
+            request.setFilters(new ArrayList<>());
+    }
+
+    @Override
+    public void onlyLogin(SpecificationRequest request, String login) {
+
+        // TODO: request.getFilters() might be nullable
+        if (Objects.isNull(request.getFilters()))
+            request.setFilters(new ArrayList<>());
+
+        request.getFilters().removeIf(f -> f.getFieldName().equals("login"));
+        request.getFilters().add(new Filter("login", FilterOperator.EQUAL, Collections.singletonList(login)));
     }
 }
