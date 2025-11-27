@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import su.opencode.digsigcik.audit.AllowAudit;
 
 
 @Data
@@ -19,23 +20,30 @@ import lombok.experimental.SuperBuilder;
 public class CertificateRequestStatus {
 
     @JsonProperty("CertificateRequestId")
+    @AllowAudit
     private String certificateRequestId;
 
     @JsonProperty("Status")
+    @AllowAudit
     private int status;
 
     @JsonProperty("CertificateInfo")
+    @AllowAudit
     private CertificateInfo certificateInfo;
 
     @JsonProperty("CertificateXmlToSign")
+    @AllowAudit
     private String certificateXmlToSign;
 
     @JsonProperty("CertificateXsltToSign")
+    @AllowAudit
     private String certificateXsltToSign;
 
     @JsonProperty("CertificateBase64")
+    @AllowAudit
     private String certificateBase64;
 
     @JsonProperty("CancelProtocol")
+    @AllowAudit
     private CancelProtocol cancelProtocol;
 }
