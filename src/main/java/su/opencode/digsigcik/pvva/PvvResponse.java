@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.springframework.web.multipart.MultipartFile;
 import su.opencode.digsigcik.pvva.enums.PvvResponseType;
 
 import java.util.Map;
@@ -33,6 +32,6 @@ public class PvvResponse {
     Map<String, Object> jsonPayload;
 
     @JsonProperty("filePayload")
-    MultipartFile filePayload;
+    byte[] filePayload;
 
 }
