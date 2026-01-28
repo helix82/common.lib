@@ -5,16 +5,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 import su.opencode.digsigcik.pvva.enums.PvvResponseType;
 
 import java.util.Map;
 
-@AllArgsConstructor
-@Data
+@Getter
 @Builder
-@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PvvResponse {
@@ -28,6 +29,10 @@ public class PvvResponse {
     @JsonProperty("errorDetails")
     String errorDetails;
 
-    @JsonProperty("saveload")
-    Map<String, Object> saveload;
+    @JsonProperty("jsonPayload")
+    Map<String, Object> jsonPayload;
+
+    @JsonProperty("filePayload")
+    MultipartFile filePayload;
+
 }
